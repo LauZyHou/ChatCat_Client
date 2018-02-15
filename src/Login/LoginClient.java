@@ -108,9 +108,11 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 		} catch (UnknownHostException e) {
 			JOptionPane.showMessageDialog(this, "无法解析服务器域名");
 			this.setTitle("ChatCat登录[x]无法解析服务器域名");
+			// System.exit(0);
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(this, "连接服务器超时");
 			this.setTitle("ChatCat登录[x]连接服务器超时");
+			// System.exit(0);
 		}
 	}
 
@@ -133,8 +135,9 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 				// 加上字符串头表示要登录,发送给后端程序服务器
 				dos.writeUTF("[login]" + str_nmbr + "#" + str_pswd);
 			} catch (IOException e1) {
-				JOptionPane.showMessageDialog(this, "账密发送失败");
-				this.setTitle("ChatCat登录[x]账密发送失败");
+				JOptionPane.showMessageDialog(this, "与服务器断开");
+				this.setTitle("ChatCat登录[x]与服务器断开");
+				// System.exit(0);
 			}
 		}
 
