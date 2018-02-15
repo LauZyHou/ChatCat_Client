@@ -98,7 +98,7 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 			// 网络地址组合端口的套接字对象:后端程序网络地址对象,3838端口
 			InetSocketAddress isa = new InetSocketAddress(ina, 3838);
 			// 尝试连接到服务器,可能发生阻塞
-			sckt.connect(isa);
+			sckt.connect(isa, 10000);// 超时时间10s
 			// 用建立好的Socket对象初始化输入输出流,与服务器输出输入流关联
 			dis = new DataInputStream(sckt.getInputStream());
 			dos = new DataOutputStream(sckt.getOutputStream());
@@ -109,8 +109,8 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 			JOptionPane.showMessageDialog(this, "无法解析服务器域名");
 			this.setTitle("ChatCat登录[x]无法解析服务器域名");
 		} catch (IOException e) {
-			System.out.println("无法连接到服务器");
-			this.setTitle("ChatCat登录[x]无法连接到服务器]");
+			JOptionPane.showMessageDialog(this, "连接服务器超时");
+			this.setTitle("ChatCat登录[x]连接服务器超时");
 		}
 	}
 
@@ -129,8 +129,13 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 			// 获取用户名和密码
 			String str_nmbr = jtf_nmbr.getText();
 			String str_pswd = new String(jpf_pswd.getPassword());
-			// 发送给后端程序服务器
-
+			try {
+				// 加上字符串头表示要登录,发送给后端程序服务器
+				dos.writeUTF("[login]" + str_nmbr + "#" + str_pswd);
+			} catch (IOException e1) {
+				JOptionPane.showMessageDialog(this, "账密发送失败");
+				this.setTitle("ChatCat登录[x]账密发送失败");
+			}
 		}
 
 	}
