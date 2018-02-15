@@ -42,6 +42,10 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 		super("ChatCat登录[正在连接到服务器...]");
 		myInit();// 窗体组件初始化
 		myConnect();// 连接到后端程序服务器
+		// 连接建立好以后,可以登录了,单开一个线程用于接收登录结果
+		// 而主线程用来向服务器发送账户名和密码,不受子线程的接收时阻塞影响
+		thrd = new Thread(this);
+		thrd.start();
 	}
 
 	// 窗体组件初始化
@@ -119,8 +123,23 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 	// 用本目标对象创建的线程启动时
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-
+		String s = null;// 存储返回来的成败信息
+		// 不停地尝试读入返回来的登录成败信息
+		while (true) {
+			try {
+				// 从输入流读入登录结果
+				s = dis.readUTF();// 子线程阻塞之处
+				// 用警告框展示
+				JOptionPane.showMessageDialog(this, s);
+				// 如果以"[v]"开头,说明登录成功了
+				if (s.startsWith("[v]")) {
+					this.dispose();// 销毁登录框
+					break;// 不用继续尝试读信息了,退出循环
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	// 注册了本监听器的控件发生ActionEvent事件时
