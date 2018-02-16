@@ -3,12 +3,15 @@ package Kernel;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 //主要界面
 public class KernelFrame extends JFrame {
@@ -17,6 +20,8 @@ public class KernelFrame extends JFrame {
 	JLabel jl_myhd;// 存放自己头像的JLabel
 	ImageIcon ii_myhd;// 头像图像
 	JLabel jl_mynm;// 存放自己用户名的JLabel
+	JButton jl_ppl, jl_grp, jl_othr;// 联系人,群聊,其它
+	JPanel jp_ppl, jp_grp, jp_othr;// 联系人,群聊,其它
 
 	// 构造器
 	public KernelFrame(String s) {
@@ -49,7 +54,7 @@ public class KernelFrame extends JFrame {
 			// 鼠标进入
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				jl_myhd.setBackground(new Color(120, 120, 200));
+				jl_myhd.setBackground(new Color(160, 160, 240));
 			}
 
 			// 鼠标退出
@@ -63,12 +68,74 @@ public class KernelFrame extends JFrame {
 		// 用户名
 		jl_mynm = new JLabel(str_name);
 		jl_mynm.setFont(new Font("黑体", 1, 14));
+		jl_mynm.setForeground(Color.WHITE);
 		jl_mynm.setBounds(110, 15, 50, 20);
 		this.add(jl_mynm);
 
+		// 联系人按钮
+		jl_ppl = new JButton("联系人");
+		jl_ppl.setBounds(0, 120, 90, 30);
+		jl_ppl.addActionListener(new MyActionAdapter() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				jp_othr.setVisible(false);
+				jp_grp.setVisible(false);
+				jp_ppl.setVisible(true);
+			}
+		});
+		this.add(jl_ppl);
+
+		// 群聊按钮
+		jl_grp = new JButton("群聊");
+		jl_grp.setBounds(90, 120, 90, 30);
+		jl_grp.addActionListener(new MyActionAdapter() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				jp_ppl.setVisible(false);
+				jp_othr.setVisible(false);
+				jp_grp.setVisible(true);
+			}
+		});
+		this.add(jl_grp);
+
+		// 其它按钮
+		jl_othr = new JButton("其它");
+		jl_othr.setBounds(180, 120, 90, 30);
+		jl_othr.addActionListener(new MyActionAdapter() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				jp_ppl.setVisible(false);
+				jp_grp.setVisible(false);
+				jp_othr.setVisible(true);
+			}
+		});
+		this.add(jl_othr);
+
+		// 联系人面板
+		jp_ppl = new JPanel();
+		jp_ppl.setBounds(0, 150, 270, 480);
+		jp_ppl.setBackground(new Color(200, 200, 255));
+		jp_ppl.setVisible(true);
+		this.add(jp_ppl);
+
+		// 群聊面板
+		jp_grp = new JPanel();
+		jp_grp.setBounds(0, 150, 270, 480);
+		jp_grp.setBackground(new Color(225, 200, 200));
+		jp_grp.setVisible(false);// 默认不显示
+		this.add(jp_grp);
+
+		// 其它面板
+		jp_othr = new JPanel();
+		jp_othr.setBounds(0, 150, 270, 480);
+		jp_othr.setBackground(new Color(200, 230, 200));
+		jp_othr.setVisible(false);// 默认不显示
+		this.add(jp_othr);
+
 		// 有关窗体
+		this.getContentPane().setBackground(Color.BLACK);
 		this.setLayout(null);
-		this.setBounds(700, 0, 250, 600);
+		this.setBounds(700, 0, 270, 600);
 		this.setVisible(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setResizable(false);
