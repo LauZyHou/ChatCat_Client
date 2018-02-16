@@ -75,12 +75,16 @@ public class KernelFrame extends JFrame {
 		// 联系人按钮
 		jl_ppl = new JButton("联系人");
 		jl_ppl.setBounds(0, 120, 90, 30);
+		jl_ppl.setEnabled(false);// 不可用
 		jl_ppl.addActionListener(new MyActionAdapter() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				jp_othr.setVisible(false);
 				jp_grp.setVisible(false);
 				jp_ppl.setVisible(true);
+				jl_othr.setEnabled(true);
+				jl_grp.setEnabled(true);
+				jl_ppl.setEnabled(false);
 			}
 		});
 		this.add(jl_ppl);
@@ -94,6 +98,9 @@ public class KernelFrame extends JFrame {
 				jp_ppl.setVisible(false);
 				jp_othr.setVisible(false);
 				jp_grp.setVisible(true);
+				jl_ppl.setEnabled(true);
+				jl_othr.setEnabled(true);
+				jl_grp.setEnabled(false);
 			}
 		});
 		this.add(jl_grp);
@@ -107,6 +114,9 @@ public class KernelFrame extends JFrame {
 				jp_ppl.setVisible(false);
 				jp_grp.setVisible(false);
 				jp_othr.setVisible(true);
+				jl_ppl.setEnabled(true);
+				jl_grp.setEnabled(true);
+				jl_othr.setEnabled(false);
 			}
 		});
 		this.add(jl_othr);
