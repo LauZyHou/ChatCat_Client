@@ -25,6 +25,27 @@ public class FrndNode implements TreeNode {
 		this.ii_head = new ImageIcon("./pic/cat" + hd + ".jpeg");
 	}
 
+	// 判断参数node结点是否是当前这个结点的子结点
+	public boolean hasChild(TreeNode node) {
+		// 传入null时抛出异常
+		if (node == null) {
+			throw new IllegalArgumentException("传入了null");
+		}
+		return node.getParent() == this;
+	}
+
+	// 为当前结点添加子结点
+	public void add(FrndNode mtn_child) {
+		// 判断一下当前结点是否没有创建过存子结点的ArrayList
+		if (this.al_chldrn == null) {
+			this.al_chldrn = new ArrayList<TreeNode>();// 创建之
+		}
+		// 添加进来,泛型
+		this.al_chldrn.add(mtn_child);
+		// 同时子结点方面与本结点建立父亲关系
+		mtn_child.tn_prnt = this;
+	}
+
 	// 按下标去获得子结点ArrayList中的一个结点
 	@Override
 	public TreeNode getChildAt(int childIndex) {
@@ -59,6 +80,8 @@ public class FrndNode implements TreeNode {
 		// 传入null时抛出异常
 		if (node == null) {
 			throw new IllegalArgumentException("传入了null");
+		} else if (this.hasChild(node)) {
+			return -1;// 传入的结点不是本结点的子结点
 		}
 		// 直接用ArrayList的indexOf方法
 		return al_chldrn.indexOf(node);
