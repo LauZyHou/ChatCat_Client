@@ -33,8 +33,25 @@ public class KernelFrame extends JFrame {
 	private void myResolve(String s) {
 		// 解析用户名Name
 		this.str_name = s.substring(s.indexOf("#用户名:") + 5, s.indexOf("#头像ID:"));
-		// 解析头像的编号HeadID,这里需要改进
-		this.str_id = s.substring(s.indexOf("#头像ID:") + 6, s.indexOf("#头像ID:") + 7);
+		// 解析头像的编号HeadID
+		this.str_id = s.substring(s.indexOf("#头像ID:") + 6, MyTools.indexOf(s, 3, "#"));
+		// 解析好友信息,前两个#携带的是用户名和头像ID,所以从3开始
+		int nowIndex = MyTools.indexOf(s, 3, "#");// 存储当前"#"位置
+		int nextIndex;// 存储下一"#"位置
+		String str_frnd;// 存储当前得到的好友信息串
+		for (int i = 3; nowIndex != -1; i++) {
+			nextIndex = MyTools.indexOf(s, i + 1, "#");// 计算下一#位置
+			// 如果下一个"#"还存在,依靠它限界
+			if (nextIndex != -1) {
+				str_frnd = s.substring(nowIndex + 1, nextIndex);
+			}
+			// 如果下一个"#"不存在,默认以结尾限界就行
+			else {
+				str_frnd = s.substring(nowIndex + 1);
+			}
+			System.out.println(str_frnd);// 调试输出
+			nowIndex = nextIndex;// 下次的"当前"即是当前的"下次"
+		}
 	}
 
 	// 窗体初始化
