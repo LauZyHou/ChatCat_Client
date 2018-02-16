@@ -33,8 +33,8 @@ public class KernelFrame extends JFrame {
 	private void myResolve(String s) {
 		// 解析用户名Name
 		this.str_name = s.substring(s.indexOf("#用户名:") + 5, s.indexOf("#头像ID:"));
-		// 解析头像的编号HeadID
-		this.str_id = s.substring(s.indexOf("#头像ID:") + 6);
+		// 解析头像的编号HeadID,这里需要改进
+		this.str_id = s.substring(s.indexOf("#头像ID:") + 6, s.indexOf("#头像ID:") + 7);
 	}
 
 	// 窗体初始化
