@@ -8,21 +8,28 @@ import javax.swing.tree.TreeNode;
 
 //联系人列表中的好友树结点,实现TreeNode接口
 public class FrndNode implements TreeNode {
-	String UsrNum;// 账号
-	String Name;// 网名
+	String UsrNum = null;// 账号
+	String Name = null;// 网名
 	int HeadID;// 头像号码
 	ImageIcon ii_head = null;// 头像图像
+	String Signature;// 个性签名,暂未录入数据库
 
 	private ArrayList<TreeNode> al_chldrn = null;// 子结点数组,泛型
 	private TreeNode tn_prnt = null;// 父结点,对象上转型
 
-	// 构造器
+	// 为用户结点使用的构造器
 	FrndNode(String usr, String nm, int hd) {
 		this.UsrNum = usr;
 		this.Name = nm;
 		this.HeadID = hd;
 		// 头像图像按头像号码生成,不必传入
 		this.ii_head = new ImageIcon("./pic/cat" + hd + ".jpeg");
+		this.Signature = "个性签名所在之处";
+	}
+
+	// 为分组结点使用的构造器
+	FrndNode(String nm) {
+		this.Name = nm;
 	}
 
 	// 判断参数node结点是否是当前这个结点的子结点
