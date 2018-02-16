@@ -3,6 +3,8 @@ package Kernel;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -42,6 +44,20 @@ public class KernelFrame extends JFrame {
 		jl_myhd.setOpaque(true);// 设置JLabel为不透明才能看见底色(作边框)
 		jl_myhd.setBackground(Color.WHITE);// 底色白色作边框
 		jl_myhd.setBounds(10, 10, 90, 90);// 大小稍多一截作边框
+		// 设定鼠标悬停特效
+		jl_myhd.addMouseListener(new MouseAdapter() {
+			// 鼠标进入
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				jl_myhd.setBackground(new Color(120, 120, 200));
+			}
+
+			// 鼠标退出
+			@Override
+			public void mouseExited(MouseEvent e) {
+				jl_myhd.setBackground(Color.WHITE);
+			}
+		});
 		this.add(jl_myhd);
 
 		// 用户名
