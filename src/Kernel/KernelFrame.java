@@ -6,6 +6,10 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
 import java.util.LinkedList;
 
 import javax.swing.ImageIcon;
@@ -17,8 +21,8 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-//主要界面
-public class KernelFrame extends JFrame {
+//主要界面,同时作为通信接收线程的目标对象
+public class KernelFrame extends JFrame implements Runnable {
 	// 组件
 	String str_name;// 用户名Name
 	String str_id;// 头像的编号HeadID
@@ -33,15 +37,36 @@ public class KernelFrame extends JFrame {
 	LinkedList<String> ll_ppl = new LinkedList<String>();
 
 	// 其它
-	FrndTrCllRndrr ftcr = new FrndTrCllRndrr();// 联系人树的渲染器
+	// 联系人树的渲染器
+	FrndTrCllRndrr ftcr = new FrndTrCllRndrr();
+	// Socket对象
+	Socket sckt = null;
+	// 输入流,输出流
+	DataInputStream dis = null;
+	DataOutputStream dos = null;
+	// 通信接收线程对象
+	Thread thrd = null;
 
-	// 构造器
-	public KernelFrame(String s) {
+	// 构造器(传入登录成功发来的信息,建立好连接的Socket对象)
+	public KernelFrame(String s, Socket sckt) {
+		this.sckt = sckt;// 保留连接好的Socket对象
+		try {
+			// 用连接好的Socket对象重建输入输出流
+			dis = new DataInputStream(sckt.getInputStream());
+			dos = new DataOutputStream(sckt.getOutputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		myResolve(s);// 解析服务器返回的信息
 		myInit();// 整体窗体初始化
 		pplDraw();// 联系人面板jp_ppl的绘制
-
+		// TODO 群聊面板绘制
+		// TODO 其它面板绘制
 		this.setVisible(true);// 全部绘制好后再设置为可见
+
+		// 单开一个线程用来接收服务器发来的信息,因为接收可能阻塞
+		thrd = new Thread(this);
+		thrd.start();
 	}
 
 	// 解析服务器返回的信息
@@ -160,7 +185,7 @@ public class KernelFrame extends JFrame {
 		jp_ppl = new JPanel();
 		jp_ppl.setLayout(null);
 		jp_ppl.setBounds(0, 150, 270, 480);
-		jp_ppl.setBackground(new Color(200, 200, 255));
+		jp_ppl.setBackground(new Color(220, 220, 255));
 		jp_ppl.setVisible(true);
 		this.add(jp_ppl);
 
@@ -224,6 +249,8 @@ public class KernelFrame extends JFrame {
 		jt_frnd.setRootVisible(false);
 		// 设置结点单击展开所需次数:1
 		jt_frnd.setToggleClickCount(1);
+		// 设置背景色为下层面板的背景色
+		jt_frnd.setBackground(jp_ppl.getBackground());
 		// 为这棵树注册监听器,用匿名的适配器覆写鼠标点击方法
 		jt_frnd.addMouseListener(new MouseAdapter() {
 			@Override
@@ -238,7 +265,13 @@ public class KernelFrame extends JFrame {
 						FrndNode fn_end = (FrndNode) tp_clk.getLastPathComponent();
 						// 只要有账号,说明是ChatCat用户
 						if (fn_end.UsrNum != null) {
-							System.out.println(fn_end.Name);
+							// TODO
+							try {
+								dos.writeUTF(fn_end.Name);
+							} catch (IOException e1) {
+								e1.printStackTrace();
+							}
+							// System.out.println(fn_end.Name);//测试输出
 						}
 					}
 				}
@@ -252,6 +285,24 @@ public class KernelFrame extends JFrame {
 		// JButton jb = new JButton("测试1");
 		// jb.setBounds(0, 0, 100, 200);
 		// jp_ppl.add(jb);
+	}
+
+	// 通信接收线程
+	@Override
+	public void run() {
+		String s = null;// 存储接收来的消息
+		try {
+			// while写在try块里时,只要有一次异常就跳出来了结束线程
+			while (true) {
+				s = dis.readUTF();// 不停地从输入流接收
+				// TODO
+				System.out.println(s);// 测试输出
+			}
+		} catch (IOException e) {
+			// 在客户端成功登录并保持连接的情况下服务器关闭会发生此异常
+			// TODO 断开连接,头像变黑,警告框
+			System.out.println("[x]与服务器断开连接");
+		}
 	}
 
 }

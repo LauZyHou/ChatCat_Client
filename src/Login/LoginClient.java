@@ -21,7 +21,7 @@ import javax.swing.JTextField;
 
 import Kernel.KernelFrame;
 
-//既是登录窗口界面,又是其ActionEvent的监听器,又是线程的目标对象
+//既是登录窗口界面,又是其ActionEvent的监听器,又是通信接收线程的目标对象
 public class LoginClient extends JFrame implements ActionListener, Runnable {
 	// 文本框:帐号
 	JTextField jtf_nmbr = null;
@@ -36,7 +36,7 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 	// 输入流,输出流
 	DataInputStream dis = null;
 	DataOutputStream dos = null;
-	// 线程对象
+	// 通信接收线程对象
 	Thread thrd = null;
 
 	// 构造器
@@ -45,7 +45,7 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 		myInit();// 窗体组件初始化
 		myConnect();// 连接到后端程序服务器
 		// 连接建立好以后,可以登录了,单开一个线程用于接收登录结果
-		// 而主线程用来向服务器发送账户名和密码,不受子线程的接收时阻塞影响
+		// 而本线程用来向服务器发送账户名和密码,不受子线程的接收时阻塞影响
 		thrd = new Thread(this);
 		thrd.start();
 	}
@@ -131,13 +131,16 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 			try {
 				// 从输入流读入登录结果
 				s = dis.readUTF();// 子线程阻塞之处
-				// 用警告框展示
-				JOptionPane.showMessageDialog(this, s);
 				// 如果以"[v]"开头,说明登录成功了
 				if (s.startsWith("[v]")) {
 					this.dispose();// 销毁登录框
-					new KernelFrame(s);// 新建一个主体界面,传入返回的信息
+					// 新建一个主体界面,传入返回的信息
+					// 另外传入建立好连接的Socket对象
+					new KernelFrame(s, sckt);
 					break;// 不用继续尝试读信息了,退出循环
+				} else {
+					// 登录失败信息用警告框展示
+					JOptionPane.showMessageDialog(this, s);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
