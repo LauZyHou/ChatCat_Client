@@ -18,6 +18,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
@@ -52,6 +53,7 @@ public class KernelFrame extends JFrame implements Runnable {
 
 	// 构造器(传入登录成功发来的信息,建立好连接的Socket对象,账户名)
 	public KernelFrame(String s, Socket sckt, String nmbr) {
+		super("ChatCat[v]TCP连接保持中");
 		this.str_nmbr = nmbr;// 保留账户名,为了在关闭该窗体时返回给服务器
 		this.sckt = sckt;// 保留连接好的Socket对象
 		try {
@@ -318,7 +320,9 @@ public class KernelFrame extends JFrame implements Runnable {
 		} catch (IOException e) {
 			// 在客户端成功登录并保持连接的情况下服务器关闭会发生此异常
 			// TODO 断开连接,头像变黑,警告框
-			System.out.println("[x]与服务器断开连接");
+			this.setTitle("ChatCat[x]连接已断开");
+			JOptionPane.showMessageDialog(this, "与服务器断开连接\n客户端程序将退出");
+			System.exit(0);// 结束程序
 		}
 	}
 
