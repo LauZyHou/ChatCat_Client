@@ -28,7 +28,7 @@ import javax.swing.tree.TreePath;
 //主要界面,同时作为通信接收线程的目标对象
 public class KernelFrame extends JFrame implements Runnable {
 	// 组件
-	String str_nmbr;// 账户名(账号),从登录时传入
+	public static String str_nmbr;// 账户名(账号),从登录时传入
 	String str_name;// 用户名Name
 	String str_id;// 头像的编号HeadID
 	JLabel jl_myhd;// 存放自己头像的JLabel
@@ -50,9 +50,10 @@ public class KernelFrame extends JFrame implements Runnable {
 	FrndTrCllRndrr ftcr = new FrndTrCllRndrr();
 	// Socket对象
 	Socket sckt = null;
-	// 输入流,输出流
+	// 输入流
 	DataInputStream dis = null;
-	DataOutputStream dos = null;
+	// 输出流写成static类型,方便在FrndChatFrame里发送时使用
+	public static DataOutputStream dos = null;
 	// 通信接收线程对象
 	Thread thrd = null;
 
@@ -298,7 +299,7 @@ public class KernelFrame extends JFrame implements Runnable {
 							}
 							// 如果窗口已经打开了,让它获得焦点,TODO 并在最前面
 							else {
-								hm_usrTOfcf.get(fn_end.UsrNum).requestFocus();
+								// hm_usrTOfcf.get(fn_end.UsrNum).requestFocus();
 								// 没找到临时设置最前面的方法,不妨让每个窗体都始终在最前面,则他们有先后
 								// hm_usrTOfcf.get(fn_end.UsrNum).setAlwaysOnTop(true);
 							}
