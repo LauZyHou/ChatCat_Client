@@ -12,7 +12,7 @@ public class FrndNode implements TreeNode {
 	String Name = null;// 网名
 	int HeadID;// 头像号码
 	ImageIcon ii_head = null;// 头像图像
-	String Signature;// 个性签名,暂未录入数据库
+	String Signature = null;// 个性签名,暂未录入数据库
 
 	private ArrayList<TreeNode> al_chldrn = null;// 子结点数组,泛型
 	private TreeNode tn_prnt = null;// 父结点,对象上转型
@@ -112,6 +112,7 @@ public class FrndNode implements TreeNode {
 	}
 
 	// 将接收方的子结点作为枚举类型返回,没用到
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Enumeration children() {
 		return null;
