@@ -15,6 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
 //主要界面
 public class KernelFrame extends JFrame {
@@ -223,6 +224,26 @@ public class KernelFrame extends JFrame {
 		jt_frnd.setRootVisible(false);
 		// 设置结点单击展开所需次数:1
 		jt_frnd.setToggleClickCount(1);
+		// 为这棵树注册监听器,用匿名的适配器覆写鼠标点击方法
+		jt_frnd.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// 如果在这棵树上点击了2次,即双击
+				if (e.getSource() == jt_frnd && e.getClickCount() == 2) {
+					// 按照鼠标点击的坐标点获取路径
+					TreePath tp_clk = jt_frnd.getPathForLocation(e.getX(), e.getY());
+					// 谨防单击空白处发生的空指针异常
+					if (tp_clk != null) {
+						// 获取这个路径上的最后一个组件引用,即双击的那个组件
+						FrndNode fn_end = (FrndNode) tp_clk.getLastPathComponent();
+						// 只要有账号,说明是ChatCat用户
+						if (fn_end.UsrNum != null) {
+							System.out.println(fn_end.Name);
+						}
+					}
+				}
+			}
+		});
 		// 添加到联系人面板jp_ppl
 		jp_ppl.add(jt_frnd);
 		this.validate();// 重绘
