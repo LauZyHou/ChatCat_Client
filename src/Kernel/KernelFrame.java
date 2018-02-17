@@ -6,6 +6,8 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -24,6 +26,7 @@ import javax.swing.tree.TreePath;
 //主要界面,同时作为通信接收线程的目标对象
 public class KernelFrame extends JFrame implements Runnable {
 	// 组件
+	String str_nmbr;// 账户名(账号),从登录时传入
 	String str_name;// 用户名Name
 	String str_id;// 头像的编号HeadID
 	JLabel jl_myhd;// 存放自己头像的JLabel
@@ -47,8 +50,9 @@ public class KernelFrame extends JFrame implements Runnable {
 	// 通信接收线程对象
 	Thread thrd = null;
 
-	// 构造器(传入登录成功发来的信息,建立好连接的Socket对象)
-	public KernelFrame(String s, Socket sckt) {
+	// 构造器(传入登录成功发来的信息,建立好连接的Socket对象,账户名)
+	public KernelFrame(String s, Socket sckt, String nmbr) {
+		this.str_nmbr = nmbr;// 保留账户名,为了在关闭该窗体时返回给服务器
 		this.sckt = sckt;// 保留连接好的Socket对象
 		try {
 			// 用连接好的Socket对象重建输入输出流
@@ -212,6 +216,18 @@ public class KernelFrame extends JFrame implements Runnable {
 		this.setVisible(false);// 在全部绘制好前不可见
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setResizable(false);
+		// 窗体关闭时向服务器发送一个关闭信息
+		this.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				try {
+					// 告诉服务器要下线的账户名,服务器查哈希表删除这项
+					dos.writeUTF("[bye]" + str_nmbr);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
 	}
 
 	// 联系人面板jp_ppl的绘制

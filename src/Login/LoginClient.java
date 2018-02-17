@@ -39,6 +39,10 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 	// 通信接收线程对象
 	Thread thrd = null;
 
+	// 附加资源
+	String str_nmbr = null;// 账户名(账号)
+	String str_pswd;// 密码
+
 	// 构造器
 	LoginClient() {
 		super("ChatCat登录[正在连接到服务器...]");
@@ -136,7 +140,8 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 					this.dispose();// 销毁登录框
 					// 新建一个主体界面,传入返回的信息
 					// 另外传入建立好连接的Socket对象
-					new KernelFrame(s, sckt);
+					// 另外传入账户名,给KernelFrame用
+					new KernelFrame(s, sckt, str_nmbr);
 					break;// 不用继续尝试读信息了,退出循环
 				} else {
 					// 登录失败信息用警告框展示
@@ -154,8 +159,8 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 		// 按下了登录按钮
 		if (e.getSource() == jb_lgn) {
 			// 获取用户名和密码
-			String str_nmbr = jtf_nmbr.getText();
-			String str_pswd = new String(jpf_pswd.getPassword());
+			str_nmbr = jtf_nmbr.getText();
+			str_pswd = new String(jpf_pswd.getPassword());
 			try {
 				// 加上字符串头表示要登录,发送给后端程序服务器
 				dos.writeUTF("[login]" + str_nmbr + "#" + str_pswd);
