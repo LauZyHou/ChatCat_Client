@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -70,7 +72,7 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 		jl_pswd.setForeground(Color.BLACK);
 		this.add(jl_pswd);
 
-		// 密码框:帐号
+		// 文本框:帐号
 		jtf_nmbr = new JTextField(10);
 		jtf_nmbr.setBounds(120, 40, 110, 20);
 		this.add(jtf_nmbr);
@@ -78,6 +80,14 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 		// 密码框:密码
 		jpf_pswd = new JPasswordField(10);
 		jpf_pswd.setBounds(120, 80, 110, 20);
+		jpf_pswd.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+				if (e.getKeyChar() == '\n') {
+					tryLogin();// 尝试登录
+				}
+			}
+		});
 		this.add(jpf_pswd);
 
 		// 按钮:登录
@@ -158,17 +168,22 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 	public void actionPerformed(ActionEvent e) {
 		// 按下了登录按钮
 		if (e.getSource() == jb_lgn) {
-			// 获取用户名和密码
-			str_nmbr = jtf_nmbr.getText();
-			str_pswd = new String(jpf_pswd.getPassword());
-			try {
-				// 加上字符串头表示要登录,发送给后端程序服务器
-				dos.writeUTF("[login]" + str_nmbr + "#" + str_pswd);
-			} catch (IOException e1) {
-				JOptionPane.showMessageDialog(this, "与服务器断开");
-				this.setTitle("ChatCat登录[x]与服务器断开");
-				// System.exit(0);
-			}
+			tryLogin();// 尝试登录
+		}
+	}
+
+	// 尝试登录
+	private void tryLogin() {
+		// 获取用户名和密码
+		str_nmbr = jtf_nmbr.getText();
+		str_pswd = new String(jpf_pswd.getPassword());
+		try {
+			// 加上字符串头表示要登录,发送给后端程序服务器
+			dos.writeUTF("[login]" + str_nmbr + "#" + str_pswd);
+		} catch (IOException e1) {
+			JOptionPane.showMessageDialog(this, "与服务器断开");
+			this.setTitle("ChatCat登录[x]与服务器断开");
+			// System.exit(0);
 		}
 	}
 }
