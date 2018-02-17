@@ -12,6 +12,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import javax.swing.ImageIcon;
@@ -39,6 +40,10 @@ public class KernelFrame extends JFrame implements Runnable {
 	// 资源
 	// 存放解析后的好友信息串
 	LinkedList<String> ll_ppl = new LinkedList<String>();
+	// 存放打开的<联系人账号,联系人聊天窗口FrndChatFrame的引用>映射
+	// 用static静态类型方便在聊天窗口关闭时操作之
+	// (在另一个类里难以拿到这个类的引用,而这个类只创建这一个对象)
+	public static HashMap<String, FrndChatFrame> hm_usrTOfcf = new HashMap<String, FrndChatFrame>();
 
 	// 其它
 	// 联系人树的渲染器
@@ -218,6 +223,8 @@ public class KernelFrame extends JFrame implements Runnable {
 		this.setVisible(false);// 在全部绘制好前不可见
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setResizable(false);
+		// 设置总在最前面,因为后面弹出的窗口也是这样
+		// this.setAlwaysOnTop(true);
 		// 窗体关闭时向服务器发送一个关闭信息
 		this.addWindowListener(new WindowAdapter() {
 			@Override
@@ -235,7 +242,7 @@ public class KernelFrame extends JFrame implements Runnable {
 	// 联系人面板jp_ppl的绘制
 	private void pplDraw() {
 		FrndNode fn_root = new FrndNode("fn_root");// JTree根结点
-		FrndNode fn_clsmt = new FrndNode("同学");// 一级结点
+		FrndNode fn_clsmt = new FrndNode("我的好友");// 一级结点
 		FrndNode fn_blk = new FrndNode("黑名单");// 一级结点
 		// 绘制"同学"里的用户结点
 		for (String s : ll_ppl) {
@@ -284,7 +291,17 @@ public class KernelFrame extends JFrame implements Runnable {
 						// 只要有账号,说明是ChatCat用户
 						if (fn_end.UsrNum != null) {
 							// TODO
-							new FrndChatFrame(fn_end);// 打开聊天窗口
+							// 打开聊天窗口,传入这个用户节点,同时这个聊天窗口的引用存进哈希表
+							// 特判一下:窗口尚未打开
+							if (!hm_usrTOfcf.containsKey(fn_end.UsrNum)) {
+								hm_usrTOfcf.put(fn_end.UsrNum, new FrndChatFrame(fn_end));
+							}
+							// 如果窗口已经打开了,让它获得焦点,TODO 并在最前面
+							else {
+								hm_usrTOfcf.get(fn_end.UsrNum).requestFocus();
+								// 没找到临时设置最前面的方法,不妨让每个窗体都始终在最前面,则他们有先后
+								// hm_usrTOfcf.get(fn_end.UsrNum).setAlwaysOnTop(true);
+							}
 							try {
 								dos.writeUTF(fn_end.Name);
 							} catch (IOException e1) {
