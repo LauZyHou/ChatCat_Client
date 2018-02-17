@@ -266,6 +266,7 @@ public class KernelFrame extends JFrame implements Runnable {
 						// 只要有账号,说明是ChatCat用户
 						if (fn_end.UsrNum != null) {
 							// TODO
+							new FrndChatFrame(fn_end);// 打开聊天窗口
 							try {
 								dos.writeUTF(fn_end.Name);
 							} catch (IOException e1) {

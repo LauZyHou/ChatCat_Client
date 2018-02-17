@@ -18,7 +18,7 @@ public class FrndNode implements TreeNode {
 	private TreeNode tn_prnt = null;// 父结点,对象上转型
 
 	// 为用户结点使用的构造器
-	FrndNode(String usr, String nm, int hd) {
+	public FrndNode(String usr, String nm, int hd) {
 		this.UsrNum = usr;
 		this.Name = nm;
 		this.HeadID = hd;
