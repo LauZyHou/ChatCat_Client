@@ -117,11 +117,11 @@ public class FrndChatFrame extends JFrame {
 		this.setBounds(250, 150, 500, 400);
 		this.setResizable(false);
 		this.setVisible(true);
-		// 窗体关闭时只是隐藏它,不关闭HashMap里对应的项目
+		// 窗体关闭时只是隐藏它,不析构存窗体引用HashMap里对应的窗体
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				setVisible(false);
+				setVisible(false);// 隐藏本窗体
 				// KernelFrame.hm_usrTOfcf.remove(ctptUsr);
 			}
 		});
@@ -135,7 +135,7 @@ public class FrndChatFrame extends JFrame {
 		// 构造要发送给服务器的消息,格式"[to对方帐号][im自己帐号]消息内容"
 		String s = "[to" + ctptUsr + "][im" + KernelFrame.str_nmbr + "]" + jtf_inpt.getText();
 		KernelFrame.dos.writeUTF(s);// 发给服务器,此处抛异常
-		jta_rcv.append(jtf_inpt.getText() + "\n");// 成功发送后在文本区显示
+		jta_rcv.append("[自己]:" + jtf_inpt.getText() + "\n");// 成功发送后在文本区显示
 		jtf_inpt.setText("");// 同时清空发送框
 		// 获得焦点在不同的发送方式下未必都需要,所以不写在send()里
 	}

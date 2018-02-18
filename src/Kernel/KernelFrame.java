@@ -44,6 +44,8 @@ public class KernelFrame extends JFrame implements Runnable {
 	// 用static静态类型方便在聊天窗口关闭时操作之
 	// (在另一个类里难以拿到这个类对象的引用,而这个类只创建这一个对象)
 	public static HashMap<String, FrndChatFrame> hm_usrTOfcf = new HashMap<String, FrndChatFrame>();
+	// 存放<联系人账户,联系人结点的引用>的哈希表
+	public static HashMap<String, FrndNode> hm_usrTOfn = new HashMap<String, FrndNode>();
 
 	// 其它
 	// 联系人树的渲染器
@@ -245,7 +247,7 @@ public class KernelFrame extends JFrame implements Runnable {
 		FrndNode fn_root = new FrndNode("fn_root");// JTree根结点
 		FrndNode fn_clsmt = new FrndNode("我的好友");// 一级结点
 		FrndNode fn_blk = new FrndNode("黑名单");// 一级结点
-		// 绘制"同学"里的用户结点
+		// 绘制"我的好友"里的用户结点
 		for (String s : ll_ppl) {
 			// 解析成String类型,它们是按逗号分隔的
 			String usr = s.substring(0, s.indexOf(","));
@@ -253,7 +255,9 @@ public class KernelFrame extends JFrame implements Runnable {
 			String hd = s.substring(MyTools.indexOf(s, 2, ",") + 1);
 			// 新建这个用户结点,传入解析好的必要的信息
 			FrndNode fn_etc = new FrndNode(usr, nm, Integer.parseInt(hd));
-			// 添加到一级结点上
+			// 将这个结点放入存<用户账户,用户结点引用>的哈希表中
+			hm_usrTOfn.put(usr, fn_etc);
+			// 挂载到一级结点上
 			fn_clsmt.add(fn_etc);
 		}
 		// 一级结点和根节点之间的嵌套
@@ -293,7 +297,7 @@ public class KernelFrame extends JFrame implements Runnable {
 						if (fn_end.UsrNum != null) {
 							// TODO
 							// 打开聊天窗口,传入这个用户节点,同时这个聊天窗口的引用存进哈希表
-							// 特判一下:窗口尚未打开过,即这个窗口没有用new创建过
+							// 特判一下:窗口尚未打开过,即这个窗口没有用new创建过,即不包含这个键值对
 							if (!hm_usrTOfcf.containsKey(fn_end.UsrNum)) {
 								hm_usrTOfcf.put(fn_end.UsrNum, new FrndChatFrame(fn_end));
 							}
@@ -354,8 +358,29 @@ public class KernelFrame extends JFrame implements Runnable {
 			// while写在try块里时,只要有一次异常就跳出来了结束线程
 			while (true) {
 				s = dis.readUTF();// 不停地从输入流接收
-				// TODO
-				System.out.println(s);// 测试输出
+				// 针对不同类型的消息做不同的事情
+				// 如果是联系人发送给自己的消息
+				if (s.contains("\n\n")) {
+					// 解析:消息来源的UsrNum
+					String str_frm = s.substring(0, s.indexOf("\n\n"));
+					// 解析:消息的内容
+					String str_msg = s.substring(s.indexOf("\n\n") + 2);
+					// 如果窗体没有创建,即在第一张哈希表中查不到
+					if (hm_usrTOfcf.get(str_frm) == null) {
+						// TODO 头像闪烁
+						// 根据消息来源,在第二章哈希表里查找来源用户的JTree结点引用
+						FrndNode fn_ext = hm_usrTOfn.get(str_frm);
+						// 不等用户双击,立即为没创建的窗体创建并写入哈希表
+						hm_usrTOfcf.put(str_frm, new FrndChatFrame(fn_ext));
+					}
+					// 如果窗体创建了但当前处于关闭状态(即不可见状态)
+					else if (hm_usrTOfcf.get(str_frm).isVisible() == false) {
+						// TODO 头像闪烁
+					}
+					// 将消息的内容展示到对应的对话框上
+					hm_usrTOfcf.get(str_frm).jta_rcv.append("[对方]:" + str_msg + "\n");
+				}
+				// System.out.println(s);// 测试输出
 			}
 		} catch (IOException e) {
 			// 在客户端成功登录并保持连接的情况下服务器关闭会发生此异常
