@@ -205,7 +205,7 @@ public class KernelFrame extends JFrame implements Runnable {
 		jp_grp = new JPanel();
 		jp_grp.setLayout(null);
 		jp_grp.setBounds(0, 150, 270, 480);
-		jp_grp.setBackground(new Color(225, 200, 200));
+		jp_grp.setBackground(new Color(240, 230, 230));
 		jp_grp.setVisible(false);// 默认不显示
 		this.add(jp_grp);
 
@@ -213,7 +213,7 @@ public class KernelFrame extends JFrame implements Runnable {
 		jp_othr = new JPanel();
 		jp_othr.setLayout(null);
 		jp_othr.setBounds(0, 150, 270, 480);
-		jp_othr.setBackground(new Color(200, 230, 200));
+		jp_othr.setBackground(new Color(230, 240, 230));
 		jp_othr.setVisible(false);// 默认不显示
 		this.add(jp_othr);
 
@@ -282,7 +282,7 @@ public class KernelFrame extends JFrame implements Runnable {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				// 如果在这棵树上点击了2次,即双击
-				if (e.getSource() == jt_frnd && e.getClickCount() == 2) {
+				if (e.getClickCount() == 2) {
 					// 按照鼠标点击的坐标点获取路径
 					TreePath tp_clk = jt_frnd.getPathForLocation(e.getX(), e.getY());
 					// 谨防单击空白处发生的空指针异常
@@ -313,6 +313,25 @@ public class KernelFrame extends JFrame implements Runnable {
 					}
 				}
 			}
+
+			// // TODO 鼠标进入
+			// @Override
+			// public void mouseEntered(MouseEvent e) {
+			// // 按照鼠标进入的坐标点获取路径
+			// TreePath tp_clk = jt_frnd.getPathForLocation(e.getX(), e.getY());
+			// // 谨防进入空白处发生的空指针异常
+			// if (tp_clk != null) {
+			// // 获取这个路径上的最后一个组件引用,即事件发生所在的那个组件
+			// FrndNode fn_end = (FrndNode) tp_clk.getLastPathComponent();
+			// // 只要有账号,说明是ChatCat用户
+			// if (fn_end.UsrNum != null) {
+			// // 根据路径获知选中的是哪行,传递给这棵树的渲染器
+			// ftcr.mouseRow = jt_frnd.getRowForLocation(e.getX(), e.getY());
+			// jt_frnd.repaint();
+			// }
+			// }
+			//
+			// }
 		});
 		// 添加到联系人面板jp_ppl
 		jp_ppl.add(jt_frnd);
