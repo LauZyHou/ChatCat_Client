@@ -6,8 +6,6 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -229,17 +227,17 @@ public class KernelFrame extends JFrame implements Runnable {
 		// 设置总在最前面,因为后面弹出的窗口也是这样
 		// this.setAlwaysOnTop(true);
 		// 窗体关闭时向服务器发送一个关闭信息
-		this.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				try {
-					// 告诉服务器要下线的账户名,服务器查哈希表删除这项
-					dos.writeUTF("[bye]" + str_nmbr);
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-			}
-		});
+		// this.addWindowListener(new WindowAdapter() {
+		// @Override
+		// public void windowClosing(WindowEvent e) {
+		// try {
+		// // 告诉服务器要下线的账户名,服务器查哈希表删除这项
+		// dos.writeUTF("[bye]" + str_nmbr);
+		// } catch (IOException e1) {
+		// e1.printStackTrace();
+		// }
+		// }
+		// });
 	}
 
 	// 联系人面板jp_ppl的绘制
