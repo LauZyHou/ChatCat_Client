@@ -4,21 +4,31 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.HashMap;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-//注册的客户端窗口,用3939端口
-public class SignUpClient extends JFrame {
+//注册的客户端窗口,用3939端口和服务端[注册请求管理/处理线程]交互
+public class SignUpClient extends JFrame implements Runnable {
 	// 组件
 	// 标签提示:帐号,密码第一次,密码第二次,网名
 	JLabel jl_usrnm, jl_pswd1, jl_pswd2, jl_nm;
@@ -27,7 +37,7 @@ public class SignUpClient extends JFrame {
 	// 密码框:密码第一次,密码第二次,
 	JPasswordField jpf_pswd1, jpf_pswd2;
 	// 按钮:注册
-	JButton jb_log;
+	JButton jb_sgn;
 	// 标签数组:6个默认头像
 	JLabel[] jl_hd = new JLabel[6];
 	// 单选框数组:6个单选框
@@ -36,6 +46,12 @@ public class SignUpClient extends JFrame {
 	ButtonGroup bg;
 	// 标签:存yes图标
 	JLabel jl_yes;
+
+	// 资源
+	// 当前选择的头像号
+	int nowHd = 1;
+	// 每个<JRadioButton引用,对应的头像号>哈希表
+	HashMap<JRadioButton, Integer> hm_jrbTOhd = new HashMap<JRadioButton, Integer>();
 
 	// 其它
 	// 通用文本提示字体
@@ -51,6 +67,7 @@ public class SignUpClient extends JFrame {
 	SignUpClient() {
 		super("ChatCat注册[正在连接到服务器]");
 		myInit();// 窗体组件初始化
+		myConnect();// 连接到后端程序服务器
 	}
 
 	// 窗体组件初始化
@@ -58,13 +75,13 @@ public class SignUpClient extends JFrame {
 		// 标签:帐号
 		jl_usrnm = new JLabel("请输入帐号:");
 		jl_usrnm.setFont(fnt_jl);
-		jl_usrnm.setBounds(30, 30, 150, 20);
+		jl_usrnm.setBounds(40, 30, 150, 20);
 		this.add(jl_usrnm);
 
 		// 标签:密码1次
 		jl_pswd1 = new JLabel("请输入密码:");
 		jl_pswd1.setFont(fnt_jl);
-		jl_pswd1.setBounds(30, 100, 150, 20);
+		jl_pswd1.setBounds(40, 100, 150, 20);
 		this.add(jl_pswd1);
 
 		// 标签:密码2次
@@ -76,37 +93,89 @@ public class SignUpClient extends JFrame {
 		// 标签:昵称
 		jl_nm = new JLabel("请输入昵称:");
 		jl_nm.setFont(fnt_jl);
-		jl_nm.setBounds(30, 240, 150, 20);
+		jl_nm.setBounds(40, 240, 150, 20);
 		this.add(jl_nm);
 
 		// 文本框:帐号
 		jtf_usrnm = new JTextField(10);
 		jtf_usrnm.setFont(fnt_jl);
 		jtf_usrnm.setBounds(170, 28, 150, 30);
+		// 帐号在客户端检查只允许输入数字
+		jtf_usrnm.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+				int ascii = e.getKeyChar();// 获得ASCII码
+				// 退格和TAB是允许的
+				if (ascii == 8 && ascii == 9) {
+					return;
+				}
+				// 超过5字符时不能再输入
+				else if (jtf_usrnm.getText().length() >= 5) {
+					e.consume();
+				}
+				// 不超过5字符的数字是允许的
+				else if (ascii >= 48 && ascii <= 57) {
+					return;
+				}
+				// 其它都不允许
+				else {
+					e.consume();// 消除键盘事件
+				}
+
+			}
+		});
 		this.add(jtf_usrnm);
 
 		// 密码框:密码1次
 		jpf_pswd1 = new JPasswordField(10);
 		jpf_pswd1.setFont(fnt_jl);
 		jpf_pswd1.setBounds(170, 98, 150, 30);
+		// 密码框检查不能超过10字符
+		jpf_pswd1.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+				if (new String(jpf_pswd1.getPassword()).length() >= 10) {
+					e.consume();// 超过10字符时取消键盘事件
+				}
+			}
+		});
 		this.add(jpf_pswd1);
 
 		// 密码框:密码2次
 		jpf_pswd2 = new JPasswordField(10);
 		jpf_pswd2.setFont(fnt_jl);
 		jpf_pswd2.setBounds(170, 168, 150, 30);
+		// 密码框检查不能超过10字符
+		jpf_pswd2.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+				if (new String(jpf_pswd2.getPassword()).length() >= 10) {
+					e.consume();// 超过10字符时取消键盘事件
+				}
+			}
+		});
 		this.add(jpf_pswd2);
 
 		// 文本框:昵称
 		jtf_nm = new JTextField(10);
 		jtf_nm.setFont(fnt_jl);
 		jtf_nm.setBounds(170, 238, 150, 30);
+		// 昵称在客户端检查不能超过10字符
+		jtf_nm.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+				if (jtf_nm.getText().length() >= 10) {
+					e.consume();// 超过10字符时取消键盘事件
+				}
+			}
+		});
 		this.add(jtf_nm);
 
 		// 按钮:注册
-		jb_log = new JButton("立即注册");
-		jb_log.setBounds(160, 500, 90, 40);
-		this.add(jb_log);
+		jb_sgn = new JButton("立即注册");
+		jb_sgn.setBounds(160, 500, 90, 40);
+		jb_sgn.setEnabled(false);// 连接服务器成功前不可用
+		this.add(jb_sgn);
 
 		// // 标签:头像
 		// ImageIcon ii_myhd;
@@ -160,14 +229,20 @@ public class SignUpClient extends JFrame {
 			// jrb_hd[i]对内部类(接口)不可见,取其引用
 			JRadioButton jrb = jrb_hd[i];
 			jrb.addItemListener(new ItemListener() {
+				// 先发生的是"失去选中",再发生"获得选中"
+				// 后面的事件会快速覆盖前者
 				@Override
 				public void itemStateChanged(ItemEvent e) {
 					if (e.getSource() == jrb) {
+						// yes标签位置改变
 						jl_yes.setBounds(jrb.getX() + 50, jrb.getY() + 10, 30, 30);
+						// 当前选中的头像号改变
+						nowHd = hm_jrbTOhd.get(jrb);
 					}
 				}
 			});
-			bg.add(jrb_hd[i]);
+			bg.add(jrb_hd[i]);// 添加到按钮组
+			hm_jrbTOhd.put(jrb_hd[i], i);// 添加到哈希表
 			this.add(jrb_hd[i]);
 		}
 		// 默认是第0个被选中
@@ -180,8 +255,80 @@ public class SignUpClient extends JFrame {
 		this.setResizable(false);
 		this.setBounds(300, 100, 400, 600);
 		this.setVisible(true);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		// 在后面覆写关闭时的方法,否则不能正确识别[放弃注册]
+		// 因为关闭连接时一定发生放弃注册,所以不用考虑直接结束整个进程的情况
+		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		this.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				try {
+					sckt.close();// 关闭Socket连接,告诉服务器已断开
+				} catch (IOException e1) {
+					// 可能会发生异常,发生异常时还是要确保连接关闭
+					// 首先让这个Socket连接不再被引用
+					sckt = null;
+					// JVM立即进行垃圾回收,销毁这个变量以告诉服务器断开
+					System.gc();
+				} finally {
+					dispose();// 关闭窗口
+				}
+			}
+		});
+	}
 
-		// 账号(20000~30000)的数字
+	// 连接到后端程序服务器
+	private void myConnect() {
+		sckt = new Socket();// 无参构造,后面再指定ip地址和端口号
+		// 确保没连接,做个判断
+		if (sckt.isConnected() == true)
+			return;
+		try {
+			// 网络地址对象:后端程序服务器
+			InetAddress ina = InetAddress.getByName("192.168.0.108");
+			// 网络地址组合端口的套接字对象:后端程序网络地址对象,3939端口
+			InetSocketAddress isa = new InetSocketAddress(ina, 3939);
+			// 尝试连接到服务器,可能发生阻塞
+			sckt.connect(isa, 10000);// 超时时间10s
+			// 用建立好的Socket对象初始化输入输出流,与服务器输出输入流关联
+			dis = new DataInputStream(sckt.getInputStream());
+			dos = new DataOutputStream(sckt.getOutputStream());
+			// 连接完全建立好以后,可以尝试注册了
+			jb_sgn.setEnabled(true);// 按钮使用开放
+			this.setTitle("ChatCat注册[v]已连接到服务器");
+		} catch (UnknownHostException e) {
+			JOptionPane.showMessageDialog(this, "无法解析服务器域名");
+			this.setTitle("ChatCat注册[x]无法解析服务器域名");
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(this, "连接服务器超时");
+			this.setTitle("ChatCat注册[x]连接服务器超时");
+		}
+	}
+
+	// 因为从数据流中读可能发生阻塞,所以放在子线程中
+	@Override
+	public void run() {
+		String s = null;// 存储返回来的成败信息
+		// 不停地尝试读入返回来的注册成败信息
+		while (true) {
+			try {
+				// 从输入流读入注册结果
+				s = dis.readUTF();// 子线程阻塞之处
+				// 如果以"[v]"开头,说明注册成功了
+				if (s.startsWith("[v]")) {
+
+					this.dispose();// 销毁注册框
+					break;// 不用继续尝试读信息了,退出循环
+				}
+				// 登录成功/失败信息都用警告框展示
+				JOptionPane.showMessageDialog(this, s);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	// 尝试注册
+	private void trySignUp() {
+		// TODO
 	}
 }
