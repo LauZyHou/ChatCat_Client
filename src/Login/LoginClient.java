@@ -176,9 +176,9 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 	@Override
 	public void run() {
 		String s = null;// 存储返回来的成败信息
-		// 不停地尝试读入返回来的登录成败信息
-		while (true) {
-			try {
+		try {
+			// 不停地尝试读入返回来的登录成败信息,只要发生异常就跳出循环
+			while (true) {
 				// 从输入流读入登录结果
 				s = dis.readUTF();// 子线程阻塞之处
 				// 如果以"[v]"开头,说明登录成功了
@@ -193,9 +193,9 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 					// 登录失败信息用警告框展示
 					JOptionPane.showMessageDialog(this, s);
 				}
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 

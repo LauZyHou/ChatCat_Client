@@ -2,6 +2,8 @@ package Login;
 
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
@@ -62,12 +64,17 @@ public class SignUpClient extends JFrame implements Runnable {
 	DataInputStream dis = null;
 	DataOutputStream dos = null;
 	// 通信接收线程对象
+	Thread thrd;
 
 	// 构造器
 	SignUpClient() {
 		super("ChatCat注册[正在连接到服务器]");
 		myInit();// 窗体组件初始化
 		myConnect();// 连接到后端程序服务器
+		// 连接建立好以后,可以注册了,单开一个线程用于接收注册结果
+		// 而本线程用来向服务器发送账户名和密码,不受子线程的接收时阻塞影响
+		thrd = new Thread(this);
+		thrd.start();
 	}
 
 	// 窗体组件初始化
@@ -175,6 +182,12 @@ public class SignUpClient extends JFrame implements Runnable {
 		jb_sgn = new JButton("立即注册");
 		jb_sgn.setBounds(160, 500, 90, 40);
 		jb_sgn.setEnabled(false);// 连接服务器成功前不可用
+		jb_sgn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				trySignUp();// 尝试注册
+			}
+		});
 		this.add(jb_sgn);
 
 		// // 标签:头像
@@ -229,20 +242,20 @@ public class SignUpClient extends JFrame implements Runnable {
 			// jrb_hd[i]对内部类(接口)不可见,取其引用
 			JRadioButton jrb = jrb_hd[i];
 			jrb.addItemListener(new ItemListener() {
-				// 先发生的是"失去选中",再发生"获得选中"
-				// 后面的事件会快速覆盖前者
+				// 先发生的是"失去选中",再发生"获得选中",都引起这个方法调用
 				@Override
 				public void itemStateChanged(ItemEvent e) {
-					if (e.getSource() == jrb) {
+					// 如果是"获得选中"
+					if (jrb.isSelected()) {
 						// yes标签位置改变
 						jl_yes.setBounds(jrb.getX() + 50, jrb.getY() + 10, 30, 30);
-						// 当前选中的头像号改变
 						nowHd = hm_jrbTOhd.get(jrb);
+						// System.out.println(nowHd);// 测试输出
 					}
 				}
 			});
 			bg.add(jrb_hd[i]);// 添加到按钮组
-			hm_jrbTOhd.put(jrb_hd[i], i);// 添加到哈希表
+			hm_jrbTOhd.put(jrb_hd[i], i + 1);// 添加到哈希表,注意+1关系
 			this.add(jrb_hd[i]);
 		}
 		// 默认是第0个被选中
@@ -308,27 +321,48 @@ public class SignUpClient extends JFrame implements Runnable {
 	@Override
 	public void run() {
 		String s = null;// 存储返回来的成败信息
-		// 不停地尝试读入返回来的注册成败信息
-		while (true) {
-			try {
+		try {
+			// 不停地尝试读入返回来的注册成败信息,只要发生异常就跳出循环
+			while (true) {
 				// 从输入流读入注册结果
 				s = dis.readUTF();// 子线程阻塞之处
+				// 注册成功/失败信息都用警告框展示
+				JOptionPane.showMessageDialog(this, s);
 				// 如果以"[v]"开头,说明注册成功了
 				if (s.startsWith("[v]")) {
-
 					this.dispose();// 销毁注册框
 					break;// 不用继续尝试读信息了,退出循环
 				}
-				// 登录成功/失败信息都用警告框展示
-				JOptionPane.showMessageDialog(this, s);
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
+		} catch (IOException e) {
+			// 注册框直接关闭(放弃注册)时会发生此异常
 		}
+
 	}
 
 	// 尝试注册
 	private void trySignUp() {
-		// TODO
+		// 拿出两次输入的密码并在客户端判断
+		String Passwd1 = new String(jpf_pswd1.getPassword());
+		String Passwd2 = new String(jpf_pswd2.getPassword());
+		if (!Passwd1.equals(Passwd2)) {
+			JOptionPane.showMessageDialog(this, "[x]两次密码不一致");
+			// 清空
+			jpf_pswd1.setText("");
+			jpf_pswd2.setText("");
+			// 焦点到第一个密码框
+			jpf_pswd1.grabFocus();
+			return;// 结束这个方法
+		}
+		// 运行至此,客户端端没有要判别的输入了,拿出其它信息并发给服务端
+		String UsrNum = jtf_usrnm.getText();
+		String Name = jtf_nm.getText();
+		try {
+			// 加上字符串头表示要注册,发送给后端程序服务器
+			dos.writeUTF("[sign]" + UsrNum + "#" + Passwd1 + "#" + Name + "#" + nowHd);
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(this, "与服务器断开");
+			this.setTitle("ChatCat注册[x]与服务器断开");
+		}
 	}
 }

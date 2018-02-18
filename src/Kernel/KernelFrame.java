@@ -85,8 +85,11 @@ public class KernelFrame extends JFrame implements Runnable {
 	private void myResolve(String s) {
 		// 解析用户名Name
 		this.str_name = s.substring(s.indexOf("#用户名:") + 5, s.indexOf("#头像ID:"));
-		// 解析头像的编号HeadID
-		this.str_id = s.substring(s.indexOf("#头像ID:") + 6, MyTools.indexOf(s, 3, "#"));
+		// 解析头像的编号HeadID,没有好友时是没有第三个"#"的
+		if (MyTools.indexOf(s, 3, "#") != -1)// 有好友
+			this.str_id = s.substring(s.indexOf("#头像ID:") + 6, MyTools.indexOf(s, 3, "#"));
+		else// 没好友
+			this.str_id = s.substring(s.indexOf("#头像ID:") + 6);
 		// 解析好友信息,前两个#携带的是用户名和头像ID,所以从3开始
 		int nowIndex = MyTools.indexOf(s, 3, "#");// 存储当前"#"位置
 		int nextIndex;// 存储下一"#"位置
@@ -141,7 +144,7 @@ public class KernelFrame extends JFrame implements Runnable {
 		jl_mynm = new JLabel(str_name);
 		jl_mynm.setFont(new Font("黑体", 1, 14));
 		jl_mynm.setForeground(Color.WHITE);
-		jl_mynm.setBounds(110, 15, 50, 20);
+		jl_mynm.setBounds(110, 15, 160, 20);
 		this.add(jl_mynm);
 
 		// 联系人按钮
