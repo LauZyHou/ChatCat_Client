@@ -136,6 +136,7 @@ public class FrndChatFrame extends JFrame {
 		String s = "[to" + ctptUsr + "][im" + KernelFrame.str_nmbr + "]" + jtf_inpt.getText();
 		KernelFrame.dos.writeUTF(s);// 发给服务器,此处抛异常
 		jta_rcv.append("[自己]:" + jtf_inpt.getText() + "\n");// 成功发送后在文本区显示
+		jta_rcv.selectAll();// 选中所有,从而让滚动条始终在最下边
 		jtf_inpt.setText("");// 同时清空发送框
 		// 获得焦点在不同的发送方式下未必都需要,所以不写在send()里
 	}

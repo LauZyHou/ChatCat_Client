@@ -379,6 +379,8 @@ public class KernelFrame extends JFrame implements Runnable {
 					}
 					// 将消息的内容展示到对应的对话框上
 					hm_usrTOfcf.get(str_frm).jta_rcv.append("[对方]:" + str_msg + "\n");
+					// 选中所有,从而让滚动条始终在最下边
+					hm_usrTOfcf.get(str_frm).jta_rcv.selectAll();
 				}
 				// System.out.println(s);// 测试输出
 			}
