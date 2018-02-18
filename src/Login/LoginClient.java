@@ -195,7 +195,8 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(this, "与服务器断开");
+			this.setTitle("ChatCat登录[x]与服务器断开");
 		}
 	}
 

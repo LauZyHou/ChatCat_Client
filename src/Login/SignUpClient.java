@@ -342,6 +342,12 @@ public class SignUpClient extends JFrame implements Runnable {
 
 	// 尝试注册
 	private void trySignUp() {
+		// 判空
+		if (jpf_pswd1.getPassword().length == 0 || jpf_pswd2.getPassword().length == 0 || jtf_nm.getText().isEmpty()
+				|| jtf_usrnm.getText().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "[x]每一项都不能为空");
+			return;
+		}
 		// 拿出两次输入的密码并在客户端判断
 		String Passwd1 = new String(jpf_pswd1.getPassword());
 		String Passwd2 = new String(jpf_pswd2.getPassword());
