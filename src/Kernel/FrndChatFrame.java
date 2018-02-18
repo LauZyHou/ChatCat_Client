@@ -112,15 +112,17 @@ public class FrndChatFrame extends JFrame {
 
 		// 有关窗体
 		this.setLayout(null);
-		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		// 关闭时什么都不做,而是在后面覆写windowClosing里隐藏窗体
+		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.setBounds(250, 150, 500, 400);
 		this.setResizable(false);
 		this.setVisible(true);
-		// 窗体关闭时把HashMap里对应的项目删除
+		// 窗体关闭时只是隐藏它,不关闭HashMap里对应的项目
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				KernelFrame.hm_usrTOfcf.remove(ctptUsr);
+				setVisible(false);
+				// KernelFrame.hm_usrTOfcf.remove(ctptUsr);
 			}
 		});
 	}

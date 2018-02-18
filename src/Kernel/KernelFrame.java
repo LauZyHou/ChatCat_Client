@@ -42,7 +42,7 @@ public class KernelFrame extends JFrame implements Runnable {
 	LinkedList<String> ll_ppl = new LinkedList<String>();
 	// 存放打开的<联系人账号,联系人聊天窗口FrndChatFrame的引用>映射
 	// 用static静态类型方便在聊天窗口关闭时操作之
-	// (在另一个类里难以拿到这个类的引用,而这个类只创建这一个对象)
+	// (在另一个类里难以拿到这个类对象的引用,而这个类只创建这一个对象)
 	public static HashMap<String, FrndChatFrame> hm_usrTOfcf = new HashMap<String, FrndChatFrame>();
 
 	// 其它
@@ -293,12 +293,15 @@ public class KernelFrame extends JFrame implements Runnable {
 						if (fn_end.UsrNum != null) {
 							// TODO
 							// 打开聊天窗口,传入这个用户节点,同时这个聊天窗口的引用存进哈希表
-							// 特判一下:窗口尚未打开
+							// 特判一下:窗口尚未打开过,即这个窗口没有用new创建过
 							if (!hm_usrTOfcf.containsKey(fn_end.UsrNum)) {
 								hm_usrTOfcf.put(fn_end.UsrNum, new FrndChatFrame(fn_end));
 							}
-							// 如果窗口已经打开了,让它获得焦点,TODO 并在最前面
+							// 如果窗口已经打开过了,它也许是点击x被隐藏了,也许已经打开而且没隐藏
 							else {
+								// 这两种情况都直接让其可见就可以了
+								hm_usrTOfcf.get(fn_end.UsrNum).setVisible(true);
+								// 下面是尝试暂时置顶的失败代码
 								// hm_usrTOfcf.get(fn_end.UsrNum).requestFocus();
 								// 没找到临时设置最前面的方法,不妨让每个窗体都始终在最前面,则他们有先后
 								// hm_usrTOfcf.get(fn_end.UsrNum).setAlwaysOnTop(true);
