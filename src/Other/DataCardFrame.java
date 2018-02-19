@@ -3,6 +3,8 @@ package Other;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -10,8 +12,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.DataOutputStream;
+import java.io.IOException;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
@@ -29,11 +33,12 @@ public class DataCardFrame extends JFrame {
 
 	// 组件
 	JLabel jl_myhd;// 放头像
-	JTextField jtf_nm;// 昵称
-	JTextArea jta_sgntr;// 个性签名
+	public JTextField jtf_nm;// 昵称
+	public JTextArea jta_sgntr;// 个性签名
 	JLabel jl_pswd1, jl_pswd2;// 新密码两个标签
 	JPasswordField jpf_pswd1, jpf_pswd2;// 新密码两个密码框
 	JLabel jl_ml, jl_fml;// 男女两个标签
+	public JButton jb_lck, jb_snd;// 解锁,发送
 
 	// 资源
 	ImageIcon ii_myhd;// 头像ImageIcon
@@ -51,6 +56,7 @@ public class DataCardFrame extends JFrame {
 	// 构造器,传入数据输出流(只向服务器写)
 	public DataCardFrame(DataOutputStream dos, String s) {
 		super("ChatCat个人资料卡");
+		this.dos = dos;
 		myResolve(s);// 解析字符串
 		myInit();// 初始化窗体
 	}
@@ -77,7 +83,7 @@ public class DataCardFrame extends JFrame {
 		jl_myhd.setBounds(20, 20, 140, 140);// 大小稍多一截作边框
 		this.add(jl_myhd);
 
-		// 文本区:昵称
+		// 文本框:昵称
 		jtf_nm = new JTextField(10);
 		jtf_nm.setEditable(false);
 		jtf_nm.setText(Name);
@@ -156,11 +162,51 @@ public class DataCardFrame extends JFrame {
 		// 文本区域:个性签名
 		jta_sgntr = new JTextArea(5, 10);
 		jta_sgntr.setEditable(false);
+		// jta_sgntr.setEnabled(false);
 		jta_sgntr.setLineWrap(true);
 		jta_sgntr.setFont(fnt_all);
 		jta_sgntr.setText(Signature);
 		jta_sgntr.setBounds(20, 200, 360, 200);
 		this.add(jta_sgntr);
+
+		// 按钮:解锁
+		jb_lck = new JButton("解锁");
+		jb_lck.setBounds(60, 420, 110, 30);
+		jb_lck.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				jtf_nm.setEditable(true);
+				jta_sgntr.setEditable(true);
+				if (jta_sgntr.getText().equals("null")) {
+					jta_sgntr.setText("");
+				}
+				jb_snd.setEnabled(true);
+				jb_snd.grabFocus();
+				jb_lck.setEnabled(false);// 自己暂时不可用
+			}
+		});
+		this.add(jb_lck);
+
+		// 按钮:发送
+		jb_snd = new JButton("保存修改");
+		jb_snd.setBounds(230, 420, 110, 30);
+		jb_snd.setEnabled(false);
+		jb_snd.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO HeadID头像的更新
+				Name = jtf_nm.getText();
+				Signature = jta_sgntr.getText();
+				try {
+					jb_snd.setEnabled(false);// 在服务器回送前关闭使用
+					// 拼起来发送给服务器,因为服务器单开一个[消息处理线程],会知道帐号
+					dos.writeUTF("[changecard]" + Name + "#" + HeadID + "#" + Sex + "#" + Signature);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		this.add(jb_snd);
 
 		// 窗体相关
 		this.setBounds(200, 100, 400, 500);

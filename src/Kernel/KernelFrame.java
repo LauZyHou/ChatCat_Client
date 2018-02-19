@@ -385,9 +385,10 @@ public class KernelFrame extends JFrame implements Runnable {
 			// while写在try块里时,只要有一次异常就跳出来了结束线程
 			while (true) {
 				s = dis.readUTF();// 不停地从输入流接收
-				// 针对不同类型的消息做不同的事情
+				/* 针对不同类型的消息做不同的事情 */
 				// 如果是服务器回送的用于创建资料卡的消息
-				if (s.startsWith("[mycard]")) {
+				// 为了防止快速点击造成的多窗体bug,要判空
+				if (s.startsWith("[mycard]") && dcf == null) {
 					// 传入输出流用于修改资料卡时向服务器发消息
 					// 传入返回来的字符串用来构造窗体
 					dcf = new DataCardFrame(dos, s);
@@ -417,6 +418,35 @@ public class KernelFrame extends JFrame implements Runnable {
 					hm_usrTOfcf.get(str_frm).jta_rcv.append("[对方]:" + str_msg + "\n");
 					// 选中所有,从而让滚动条始终在最下边
 					hm_usrTOfcf.get(str_frm).jta_rcv.selectAll();
+				}
+				// 如果是服务器回送的修改资料卡的成败消息
+				else if (s.startsWith("[changecard]")) {
+					// 修改成功
+					if (s.contains("success")) {
+						// 如果资料卡还开着,从资料卡通知用户
+						if (dcf != null) {
+							JOptionPane.showMessageDialog(dcf, "[v]修改成功");
+							dcf.jtf_nm.setEditable(false);
+							dcf.jta_sgntr.setEditable(false);
+							dcf.jb_lck.setEnabled(true);
+						}
+						// 资料卡关了,从本窗体通知用户
+						else {
+							JOptionPane.showMessageDialog(this, "[x]修改失败");
+						}
+					}
+					// 修改失败
+					else {
+						// 如果资料卡还开着,从资料卡通知用户
+						if (dcf != null) {
+							JOptionPane.showMessageDialog(dcf, "[x]修改失败");
+							dcf.jb_snd.setEnabled(true);// 发送又可用了
+						}
+						// 资料卡关了,从本窗体通知用户
+						else {
+							JOptionPane.showMessageDialog(this, "[x]修改失败");
+						}
+					}
 				}
 				// System.out.println(s);// 测试输出
 			}
