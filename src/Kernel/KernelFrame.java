@@ -47,7 +47,7 @@ public class KernelFrame extends JFrame implements Runnable {
 	// 存放<联系人账户,联系人结点的引用>的哈希表
 	public static HashMap<String, FrndNode> hm_usrTOfn = new HashMap<String, FrndNode>();
 	// 个人资料卡,只能打开一张
-	DataCardFrame dcf;
+	public static DataCardFrame dcf;
 
 	// 其它
 	// 联系人树的渲染器
@@ -145,12 +145,21 @@ public class KernelFrame extends JFrame implements Runnable {
 			// 鼠标单击
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				// 打开资料卡,传入Socket连接对象
-				if (dcf == null)
-					dcf = new DataCardFrame(sckt);
-				dcf.setVisible(true);
-				dcf.requestFocus();
-				dcf.setExtendedState(JFrame.NORMAL);
+				// 如果还没有创建,或者已经关闭,要向服务器发消息来创建
+				// 这样才能保证资料卡是最新的
+				if (dcf == null) {
+					try {
+						// 发送请求给服务器,在接收消息处new而不需要在这里new
+						dos.writeUTF("[mycard]" + str_nmbr);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+				// 如果仅仅是最小化了,恢复正常
+				else {
+					dcf.setExtendedState(JFrame.NORMAL);
+					dcf.requestFocus();
+				}
 			}
 
 		});
@@ -377,8 +386,14 @@ public class KernelFrame extends JFrame implements Runnable {
 			while (true) {
 				s = dis.readUTF();// 不停地从输入流接收
 				// 针对不同类型的消息做不同的事情
+				// 如果是服务器回送的用于创建资料卡的消息
+				if (s.startsWith("[mycard]")) {
+					// 传入输出流用于修改资料卡时向服务器发消息
+					// 传入返回来的字符串用来构造窗体
+					dcf = new DataCardFrame(dos, s);
+				}
 				// 如果是联系人发送给自己的消息
-				if (s.contains("\n\n")) {
+				else if (s.contains("\n\n")) {
 					// 解析:消息来源的UsrNum
 					String str_frm = s.substring(0, s.indexOf("\n\n"));
 					// 解析:消息的内容

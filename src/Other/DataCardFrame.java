@@ -7,10 +7,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.DataInputStream;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.Socket;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -19,9 +18,14 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import Kernel.KernelFrame;
+import Kernel.MyTools;
 
 //个人资料卡
 public class DataCardFrame extends JFrame {
+	// 存用户的信息
+	String Name, Signature;// 姓名,签名档
+	int HeadID, Sex;// 头像号,性别0女1男
+
 	// 组件
 	JLabel jl_myhd;// 放头像
 	JTextField jtf_nm, jtf_sig;// 昵称,个性签名
@@ -37,53 +41,29 @@ public class DataCardFrame extends JFrame {
 	Color clr_all = new Color(230, 240, 230);
 
 	// 其它
-	// 传进来的Socket连接对象
-	Socket sckt;
-	// 输入输出流
-	DataInputStream dis;
-	DataOutputStream dos;
+	DataOutputStream dos;// KernelFrame传进来的输出流
 	boolean isExtnd = false;// 展开情况
-	boolean male;// fale女true男
 
 	// 构造器,传入数据输出流(只向服务器写)
-	public DataCardFrame(Socket sckt) {
+	public DataCardFrame(DataOutputStream dos, String s) {
 		super("ChatCat个人资料卡");
-		this.sckt = sckt;
-		query();// 查询数据库
+		myResolve(s);// 解析字符串
 		myInit();// 初始化窗体
 	}
 
-	// 查询数据库
-	private void query() {
-		try {
-			dis = new DataInputStream(sckt.getInputStream());
-			dos = new DataOutputStream(sckt.getOutputStream());
-			// 发送请求给服务器
-			dos.writeUTF("[mycard]" + KernelFrame.str_nmbr);
-			// 单开一个线程,从服务器拿回结果,防止阻塞影响其它线程
-			Thread thrd = new Thread() {
-				@Override
-				public void run() {
-					String result;
-					try {
-						result = dis.readUTF();
-						System.out.println(result);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			};
-			// thrd.start();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	// 解析字符串
+	private void myResolve(String s) {
+		Name = s.substring(s.indexOf("]") + 1, s.indexOf("#"));
+		HeadID = Integer.parseInt(s.substring(s.indexOf("#") + 1, MyTools.indexOf(s, 2, "#")));
+		Sex = Integer.parseInt(s.substring(MyTools.indexOf(s, 2, "#") + 1, s.lastIndexOf("#")));
+		Signature = s.substring(s.lastIndexOf("#") + 1);
 	}
 
 	// 初始化窗体
 	private void myInit() {
 		// 标签:头像
 		// 头像的ImageIcon对象
-		ii_myhd = new ImageIcon("./pic/cat1.jpeg");
+		ii_myhd = new ImageIcon("./pic/cat" + HeadID + ".jpeg");
 		// 对头像两步缩放
 		ii_myhd.setImage(ii_myhd.getImage().getScaledInstance(125, 125, Image.SCALE_DEFAULT));
 		// 用这个ImageIcon对象设置头像入JLabel
@@ -95,6 +75,8 @@ public class DataCardFrame extends JFrame {
 
 		// 文本区:昵称
 		jtf_nm = new JTextField(10);
+		jtf_nm.setEditable(false);
+		jtf_nm.setText(Name);
 		jtf_nm.setFont(fnt_all);
 		jtf_nm.setBounds(180, 20, 180, 40);
 		// 昵称在客户端检查不能超过10字符
@@ -122,6 +104,8 @@ public class DataCardFrame extends JFrame {
 				ii_fml = new ImageIcon("./krnl_pic/female.png");
 				ii_fml.setImage(ii_fml.getImage().getScaledInstance(60, 60, Image.SCALE_DEFAULT));
 				jl_fml.setIcon(ii_fml);
+				// 更改男女
+				Sex = 1;
 			}
 		});
 		this.add(jl_ml);
@@ -140,12 +124,20 @@ public class DataCardFrame extends JFrame {
 				ii_ml = new ImageIcon("./krnl_pic/male.png");
 				ii_ml.setImage(ii_ml.getImage().getScaledInstance(60, 60, Image.SCALE_DEFAULT));
 				jl_ml.setIcon(ii_ml);
+				// 更改男女
+				Sex = 0;
 			}
 		});
 		this.add(jl_fml);
 
-		ii_fml = new ImageIcon("./krnl_pic/female.png");
-		jl_fml.setIcon(ii_fml);
+		// 判断男女以决定让哪个JLabel里的图像变大
+		if (Sex == 1) {
+			ii_ml = new ImageIcon("./krnl_pic/male.png");
+			jl_ml.setIcon(ii_ml);
+		} else {
+			ii_fml = new ImageIcon("./krnl_pic/female.png");
+			jl_fml.setIcon(ii_fml);
+		}
 
 		// 窗体相关
 		this.setBounds(200, 100, 400, 500);
@@ -154,6 +146,15 @@ public class DataCardFrame extends JFrame {
 		this.getContentPane().setBackground(clr_all);
 		this.setResizable(false);
 		this.setVisible(true);
+		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		this.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				dispose();// 释放自己窗体资源
+				KernelFrame.dcf = null;// 使这个窗体不被引用
+				System.gc();// 立即要求JVM进行垃圾回收
+			}
+		});
 	}
 
 }
