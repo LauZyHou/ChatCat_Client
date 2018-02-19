@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.DataInputStream;
@@ -26,7 +27,10 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import Other.AddFrndFrame;
 import Other.DataCardFrame;
+import Other.OthrMouseAdapter;
+import Other.SndErrFrame;
 
 //主要界面,同时作为通信接收线程的目标对象
 public class KernelFrame extends JFrame implements Runnable {
@@ -52,7 +56,11 @@ public class KernelFrame extends JFrame implements Runnable {
 	// 存放<联系人账户,联系人结点的引用>的哈希表
 	public static HashMap<String, FrndNode> hm_usrTOfn = new HashMap<String, FrndNode>();
 	// 个人资料卡,只能打开一张
-	public static DataCardFrame dcf;
+	public static DataCardFrame dcf = null;
+	// 提交错误窗体,只能打开一张
+	public static SndErrFrame srf = null;
+	// 添加好友窗体,只能打开一张
+	public static AddFrndFrame aff = null;
 
 	// 其它
 	// 联系人树的渲染器
@@ -65,6 +73,10 @@ public class KernelFrame extends JFrame implements Runnable {
 	public static DataOutputStream dos = null;
 	// 通信接收线程对象
 	Thread thrd = null;
+	// 其它面板的颜色,即其它组件的未选中颜色
+	public static Color clr_othr = new Color(230, 240, 230);
+	// 鼠标在其它组件上时变成的颜色
+	public static Color clr_othr2 = new Color(210, 240, 210);
 
 	// 构造器(传入登录成功发来的信息,建立好连接的Socket对象,账户名)
 	public KernelFrame(String s, Socket sckt, String nmbr) {
@@ -254,7 +266,7 @@ public class KernelFrame extends JFrame implements Runnable {
 		jp_othr.setLayout(null);
 		// 这个x,y是相对于JScrollPane的,似乎乱设也没关系
 		jp_othr.setBounds(0, 0, 270, 500);// 500放5个100高的按钮
-		jp_othr.setBackground(new Color(230, 240, 230));
+		jp_othr.setBackground(clr_othr);
 		jp_othr.setVisible(false);// 默认不显示
 		// 为JPanel设定滚动条一定要先setPreferredSize而且要比滚动条大
 		jp_othr.setPreferredSize(new Dimension(270, 500));
@@ -401,12 +413,28 @@ public class KernelFrame extends JFrame implements Runnable {
 
 	// 其它面板jp_othr的绘制
 	private void othrDraw() {
+		// "其它"面板上鼠标事件的适配器,实现悬停变色
+		OthrMouseAdapter oma = new OthrMouseAdapter();
+
 		// 添加好友
 		jb_frnd = new JButton("添加好友");
 		jb_frnd.setBounds(0, 0, jp_othr.getWidth(), 100);
 		jb_frnd.setIcon(new ImageIcon("./krnl_pic/add.png"));
 		jb_frnd.setFocusable(false);// 不获得焦点,不然焦点框很丑
-		jb_frnd.setBackground(new Color(210, 240, 210));
+		jb_frnd.setBackground(clr_othr);
+		jb_frnd.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (aff == null)
+					aff = new AddFrndFrame(dos);
+				else {
+					// aff窗口关闭时会析构自己,因此这里只是最小化
+					aff.setExtendedState(JFrame.NORMAL);
+					aff.requestFocus();
+				}
+			}
+		});
+		jb_frnd.addMouseListener(oma);
 		jp_othr.add(jb_frnd);
 
 		// 处理事务
@@ -414,7 +442,8 @@ public class KernelFrame extends JFrame implements Runnable {
 		jb_msg.setBounds(0, 100, jp_othr.getWidth(), 100);
 		jb_msg.setIcon(new ImageIcon("./krnl_pic/msg.png"));
 		jb_msg.setFocusable(false);
-		jb_msg.setBackground(jb_frnd.getBackground());
+		jb_msg.setBackground(clr_othr);
+		jb_msg.addMouseListener(oma);
 		jp_othr.add(jb_msg);
 
 		// 批量删除
@@ -422,7 +451,8 @@ public class KernelFrame extends JFrame implements Runnable {
 		jb_del.setBounds(0, 200, jp_othr.getWidth(), 100);
 		jb_del.setIcon(new ImageIcon("./krnl_pic/del.png"));
 		jb_del.setFocusable(false);
-		jb_del.setBackground(jb_frnd.getBackground());
+		jb_del.setBackground(clr_othr);
+		jb_del.addMouseListener(oma);
 		jp_othr.add(jb_del);
 
 		// 创建群聊
@@ -430,15 +460,30 @@ public class KernelFrame extends JFrame implements Runnable {
 		jb_crtgrp.setBounds(0, 300, jp_othr.getWidth(), 100);
 		jb_crtgrp.setIcon(new ImageIcon("./krnl_pic/crtgrp.png"));
 		jb_crtgrp.setFocusable(false);
-		jb_crtgrp.setBackground(jb_frnd.getBackground());
+		jb_crtgrp.setBackground(clr_othr);
+		jb_crtgrp.addMouseListener(oma);
 		jp_othr.add(jb_crtgrp);
 
-		// 提交错误
-		jb_err = new JButton("提交错误");
+		// 错误提交
+		jb_err = new JButton("错误提交");
 		jb_err.setBounds(0, 400, jp_othr.getWidth(), 100);
 		jb_err.setIcon(new ImageIcon("./krnl_pic/err.png"));
 		jb_err.setFocusable(false);
-		jb_err.setBackground(jb_frnd.getBackground());
+		jb_err.setBackground(clr_othr);
+		jb_err.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (srf == null)
+					srf = new SndErrFrame(dos);
+				else {
+					// 窗口关闭时默认只是隐藏了
+					srf.setVisible(true);
+					srf.setExtendedState(JFrame.NORMAL);
+					srf.requestFocus();
+				}
+			}
+		});
+		jb_err.addMouseListener(oma);
 		jp_othr.add(jb_err);
 	}
 
