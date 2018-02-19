@@ -1,20 +1,115 @@
 package Other;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
 
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPasswordField;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+
+import Kernel.KernelFrame;
 
 //个人资料卡
 public class DataCardFrame extends JFrame {
+	// 组件
+	JLabel jl_myhd;// 放头像
+	JTextField jtf_nm, jtf_sig;// 昵称,个性签名
+	JLabel jl_pswd1, jl_pswd2;// 新密码两个标签
+	JPasswordField jpf_pswd1, jpf_pswd2;// 新密码两个密码框
+	JRadioButton jrb_ml, jrb_fml;// 男/女单选按钮
+	ButtonGroup bg;// 按钮组
+
+	// 资源
+	ImageIcon ii_myhd;// 头像ImageIcon
+	Font fnt_all = new Font("黑体", 1, 20);// 通用字体
+
+	// 其它
+	// 传进来的Socket连接对象
+	Socket sckt;
+	// 输入输出流
+	DataInputStream dis;
 	DataOutputStream dos;
+	boolean isExtnd = false;// 展开情况
+	boolean male;// fale女true男
 
 	// 构造器,传入数据输出流(只向服务器写)
-	public DataCardFrame(DataOutputStream dos) {
+	public DataCardFrame(Socket sckt) {
 		super("ChatCat个人资料卡");
-		this.dos = dos;
+		this.sckt = sckt;
+		query();// 查询数据库
+		myInit();// 初始化窗体
+	}
+
+	// 查询数据库
+	private void query() {
+		try {
+			dis = new DataInputStream(sckt.getInputStream());
+			dos = new DataOutputStream(sckt.getOutputStream());
+			// 发送请求给服务器
+			dos.writeUTF("[mycard]" + KernelFrame.str_nmbr);
+			// 单开一个线程,从服务器拿回结果,防止阻塞影响其它线程
+			Thread thrd = new Thread() {
+				@Override
+				public void run() {
+					String result;
+					try {
+						result = dis.readUTF();
+						System.out.println(result);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			};
+			// thrd.start();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	// 初始化窗体
+	private void myInit() {
+		// 标签:头像
+		// 头像的ImageIcon对象
+		ii_myhd = new ImageIcon("./pic/cat1.jpeg");
+		// 对头像两步缩放
+		ii_myhd.setImage(ii_myhd.getImage().getScaledInstance(125, 125, Image.SCALE_DEFAULT));
+		// 用这个ImageIcon对象设置头像入JLabel
+		jl_myhd = new JLabel(ii_myhd);
+		jl_myhd.setOpaque(true);// 设置JLabel为不透明才能看见底色(作边框)
+		jl_myhd.setBackground(Color.WHITE);// 底色白色作边框
+		jl_myhd.setBounds(20, 20, 140, 140);// 大小稍多一截作边框
+		this.add(jl_myhd);
+
+		// 文本区:昵称
+		jtf_nm = new JTextField(10);
+		jtf_nm.setFont(fnt_all);
+		jtf_nm.setBounds(180, 20, 180, 40);
+		// 昵称在客户端检查不能超过10字符
+		jtf_nm.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+				if (jtf_nm.getText().length() >= 10) {
+					e.consume();// 超过10字符时取消键盘事件
+				}
+			}
+		});
+		this.add(jtf_nm);
 
 		// 窗体相关
 		this.setBounds(200, 100, 400, 500);
+		this.setLayout(null);
+		this.setResizable(false);
 		this.setVisible(true);
 	}
 

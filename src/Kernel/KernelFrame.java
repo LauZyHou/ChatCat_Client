@@ -145,9 +145,9 @@ public class KernelFrame extends JFrame implements Runnable {
 			// 鼠标单击
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				// 打开资料卡,传入数据输出流(只向服务器写)
+				// 打开资料卡,传入Socket连接对象
 				if (dcf == null)
-					dcf = new DataCardFrame(dos);
+					dcf = new DataCardFrame(sckt);
 				dcf.setVisible(true);
 				dcf.requestFocus();
 				dcf.setExtendedState(JFrame.NORMAL);
@@ -323,7 +323,6 @@ public class KernelFrame extends JFrame implements Runnable {
 								hm_usrTOfcf.get(fn_end.UsrNum).setVisible(true);
 								hm_usrTOfcf.get(fn_end.UsrNum).setExtendedState(JFrame.NORMAL);
 								hm_usrTOfcf.get(fn_end.UsrNum).requestFocus();
-								// TODO
 								// 下面是尝试暂时置顶的失败代码
 								// hm_usrTOfcf.get(fn_end.UsrNum).requestFocus();
 								// 没找到临时设置最前面的方法,不妨让每个窗体都始终在最前面,则他们有先后
