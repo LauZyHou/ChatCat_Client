@@ -1,6 +1,7 @@
 package Kernel;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -19,6 +20,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -34,8 +37,10 @@ public class KernelFrame extends JFrame implements Runnable {
 	JLabel jl_myhd;// 存放自己头像的JLabel
 	ImageIcon ii_myhd;// 头像图像
 	JLabel jl_mynm;// 存放自己用户名的JLabel
-	JButton jl_ppl, jl_grp, jl_othr;// 联系人,群聊,其它
+	JButton jb_ppl, jb_grp, jb_othr;// 联系人,群聊,其它
 	JPanel jp_ppl, jp_grp, jp_othr;// 联系人,群聊,其它
+	// 添加好友,报告错误,处理事务,批量删除,创建群聊
+	JButton jb_frnd, jb_err, jb_msg, jb_del, jb_crtgrp;
 
 	// 资源
 	// 存放解析后的好友信息串
@@ -64,7 +69,7 @@ public class KernelFrame extends JFrame implements Runnable {
 	// 构造器(传入登录成功发来的信息,建立好连接的Socket对象,账户名)
 	public KernelFrame(String s, Socket sckt, String nmbr) {
 		super("ChatCat[v]TCP连接保持中");
-		this.str_nmbr = nmbr;// 保留账户名,为了在关闭该窗体时返回给服务器
+		str_nmbr = nmbr;// 保留账户名,为了在关闭该窗体时返回给服务器
 		this.sckt = sckt;// 保留连接好的Socket对象
 		try {
 			// 用连接好的Socket对象重建输入输出流
@@ -77,7 +82,7 @@ public class KernelFrame extends JFrame implements Runnable {
 		myInit();// 整体窗体初始化
 		pplDraw();// 联系人面板jp_ppl的绘制
 		// TODO 群聊面板绘制
-		// TODO 其它面板绘制
+		othrDraw();
 		this.setVisible(true);// 全部绘制好后再设置为可见
 
 		// 单开一个线程用来接收服务器发来的信息,因为接收可能阻塞
@@ -174,53 +179,59 @@ public class KernelFrame extends JFrame implements Runnable {
 		this.add(jl_mynm);
 
 		// 联系人按钮
-		jl_ppl = new JButton("联系人");
-		jl_ppl.setBounds(0, 120, 90, 30);
-		jl_ppl.setEnabled(false);// 不可用
-		jl_ppl.addActionListener(new MyActionAdapter() {
+		jb_ppl = new JButton("联系人");
+		jb_ppl.setBackground(new Color(220, 220, 255));
+		jb_ppl.setBounds(0, 120, 90, 30);
+		jb_ppl.setEnabled(false);// 不可用
+		jb_ppl.addActionListener(new MyActionAdapter() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				jp_othr.setVisible(false);
 				jp_grp.setVisible(false);
 				jp_ppl.setVisible(true);
-				jl_othr.setEnabled(true);
-				jl_grp.setEnabled(true);
-				jl_ppl.setEnabled(false);
+				jb_othr.setEnabled(true);
+				jb_grp.setEnabled(true);
+				jb_ppl.setEnabled(false);
 			}
 		});
-		this.add(jl_ppl);
+		jb_ppl.setFocusable(false);
+		this.add(jb_ppl);
 
 		// 群聊按钮
-		jl_grp = new JButton("群聊");
-		jl_grp.setBounds(90, 120, 90, 30);
-		jl_grp.addActionListener(new MyActionAdapter() {
+		jb_grp = new JButton("群聊");
+		jb_grp.setBackground(new Color(240, 230, 230));
+		jb_grp.setBounds(90, 120, 90, 30);
+		jb_grp.addActionListener(new MyActionAdapter() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				jp_ppl.setVisible(false);
 				jp_othr.setVisible(false);
 				jp_grp.setVisible(true);
-				jl_ppl.setEnabled(true);
-				jl_othr.setEnabled(true);
-				jl_grp.setEnabled(false);
+				jb_ppl.setEnabled(true);
+				jb_othr.setEnabled(true);
+				jb_grp.setEnabled(false);
 			}
 		});
-		this.add(jl_grp);
+		jb_grp.setFocusable(false);
+		this.add(jb_grp);
 
 		// 其它按钮
-		jl_othr = new JButton("其它");
-		jl_othr.setBounds(180, 120, 90, 30);
-		jl_othr.addActionListener(new MyActionAdapter() {
+		jb_othr = new JButton("其它");
+		jb_othr.setBackground(new Color(230, 240, 230));
+		jb_othr.setBounds(180, 120, 90, 30);
+		jb_othr.addActionListener(new MyActionAdapter() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				jp_ppl.setVisible(false);
 				jp_grp.setVisible(false);
 				jp_othr.setVisible(true);
-				jl_ppl.setEnabled(true);
-				jl_grp.setEnabled(true);
-				jl_othr.setEnabled(false);
+				jb_ppl.setEnabled(true);
+				jb_grp.setEnabled(true);
+				jb_othr.setEnabled(false);
 			}
 		});
-		this.add(jl_othr);
+		jb_othr.setFocusable(false);
+		this.add(jb_othr);
 
 		// 联系人面板
 		jp_ppl = new JPanel();
@@ -241,10 +252,20 @@ public class KernelFrame extends JFrame implements Runnable {
 		// 其它面板
 		jp_othr = new JPanel();
 		jp_othr.setLayout(null);
-		jp_othr.setBounds(0, 150, 270, 480);
+		// 这个x,y是相对于JScrollPane的,似乎乱设也没关系
+		jp_othr.setBounds(0, 0, 270, 500);// 500放5个100高的按钮
 		jp_othr.setBackground(new Color(230, 240, 230));
 		jp_othr.setVisible(false);// 默认不显示
-		this.add(jp_othr);
+		// 为JPanel设定滚动条一定要先setPreferredSize而且要比滚动条大
+		jp_othr.setPreferredSize(new Dimension(270, 500));
+		JScrollPane jsp_othr = new JScrollPane(jp_othr);
+		// 设置滚动速度快一些
+		JScrollBar jsb = jsp_othr.getVerticalScrollBar();
+		jsb.setUnitIncrement(10);
+		// 设置取消横向滚动
+		jsp_othr.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		jsp_othr.setBounds(0, 150, 270, 425);// 滚动条高度=实际算出来的-25
+		this.add(jsp_othr);
 
 		// 有关窗体
 		this.getContentPane().setBackground(Color.BLACK);
@@ -376,6 +397,49 @@ public class KernelFrame extends JFrame implements Runnable {
 		// JButton jb = new JButton("测试1");
 		// jb.setBounds(0, 0, 100, 200);
 		// jp_ppl.add(jb);
+	}
+
+	// 其它面板jp_othr的绘制
+	private void othrDraw() {
+		// 添加好友
+		jb_frnd = new JButton("添加好友");
+		jb_frnd.setBounds(0, 0, jp_othr.getWidth(), 100);
+		jb_frnd.setIcon(new ImageIcon("./krnl_pic/add.png"));
+		jb_frnd.setFocusable(false);// 不获得焦点,不然焦点框很丑
+		jb_frnd.setBackground(new Color(210, 240, 210));
+		jp_othr.add(jb_frnd);
+
+		// 处理事务
+		jb_msg = new JButton("处理事务");
+		jb_msg.setBounds(0, 100, jp_othr.getWidth(), 100);
+		jb_msg.setIcon(new ImageIcon("./krnl_pic/msg.png"));
+		jb_msg.setFocusable(false);
+		jb_msg.setBackground(jb_frnd.getBackground());
+		jp_othr.add(jb_msg);
+
+		// 批量删除
+		jb_del = new JButton("批量删除");
+		jb_del.setBounds(0, 200, jp_othr.getWidth(), 100);
+		jb_del.setIcon(new ImageIcon("./krnl_pic/del.png"));
+		jb_del.setFocusable(false);
+		jb_del.setBackground(jb_frnd.getBackground());
+		jp_othr.add(jb_del);
+
+		// 创建群聊
+		jb_crtgrp = new JButton("创建群聊");
+		jb_crtgrp.setBounds(0, 300, jp_othr.getWidth(), 100);
+		jb_crtgrp.setIcon(new ImageIcon("./krnl_pic/crtgrp.png"));
+		jb_crtgrp.setFocusable(false);
+		jb_crtgrp.setBackground(jb_frnd.getBackground());
+		jp_othr.add(jb_crtgrp);
+
+		// 提交错误
+		jb_err = new JButton("提交错误");
+		jb_err.setBounds(0, 400, jp_othr.getWidth(), 100);
+		jb_err.setIcon(new ImageIcon("./krnl_pic/err.png"));
+		jb_err.setFocusable(false);
+		jb_err.setBackground(jb_frnd.getBackground());
+		jp_othr.add(jb_err);
 	}
 
 	// 通信接收线程
