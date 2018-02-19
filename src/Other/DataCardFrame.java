@@ -5,17 +5,17 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
-import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import Kernel.KernelFrame;
@@ -27,12 +27,14 @@ public class DataCardFrame extends JFrame {
 	JTextField jtf_nm, jtf_sig;// 昵称,个性签名
 	JLabel jl_pswd1, jl_pswd2;// 新密码两个标签
 	JPasswordField jpf_pswd1, jpf_pswd2;// 新密码两个密码框
-	JRadioButton jrb_ml, jrb_fml;// 男/女单选按钮
-	ButtonGroup bg;// 按钮组
+	JLabel jl_ml, jl_fml;// 男女两个标签
 
 	// 资源
 	ImageIcon ii_myhd;// 头像ImageIcon
+	ImageIcon ii_ml = new ImageIcon("./krnl_pic/male.png");
+	ImageIcon ii_fml = new ImageIcon("./krnl_pic/female.png");
 	Font fnt_all = new Font("黑体", 1, 20);// 通用字体
+	Color clr_all = new Color(230, 240, 230);
 
 	// 其它
 	// 传进来的Socket连接对象
@@ -106,9 +108,50 @@ public class DataCardFrame extends JFrame {
 		});
 		this.add(jtf_nm);
 
+		// 标签:性别男
+		ii_ml.setImage(ii_ml.getImage().getScaledInstance(60, 60, Image.SCALE_DEFAULT));
+		jl_ml = new JLabel(ii_ml);
+		jl_ml.setBounds(170, 70, 100, 100);
+		// jl_ml.setOpaque(true);
+		// jrb_ml.setBackground(clr_all);
+		jl_ml.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				ii_ml = new ImageIcon("./krnl_pic/male.png");
+				jl_ml.setIcon(ii_ml);
+				ii_fml = new ImageIcon("./krnl_pic/female.png");
+				ii_fml.setImage(ii_fml.getImage().getScaledInstance(60, 60, Image.SCALE_DEFAULT));
+				jl_fml.setIcon(ii_fml);
+			}
+		});
+		this.add(jl_ml);
+
+		// 标签:性别女
+		ii_fml.setImage(ii_fml.getImage().getScaledInstance(60, 60, Image.SCALE_DEFAULT));
+		jl_fml = new JLabel(ii_fml);
+		jl_fml.setBounds(280, 70, 100, 100);
+		// jl_fml.setOpaque(true);
+		// jrb_fml.setBackground(clr_all);
+		jl_fml.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				ii_fml = new ImageIcon("./krnl_pic/female.png");
+				jl_fml.setIcon(ii_fml);
+				ii_ml = new ImageIcon("./krnl_pic/male.png");
+				ii_ml.setImage(ii_ml.getImage().getScaledInstance(60, 60, Image.SCALE_DEFAULT));
+				jl_ml.setIcon(ii_ml);
+			}
+		});
+		this.add(jl_fml);
+
+		ii_fml = new ImageIcon("./krnl_pic/female.png");
+		jl_fml.setIcon(ii_fml);
+
 		// 窗体相关
 		this.setBounds(200, 100, 400, 500);
 		this.setLayout(null);
+		// 窗体颜色
+		this.getContentPane().setBackground(clr_all);
 		this.setResizable(false);
 		this.setVisible(true);
 	}
