@@ -495,6 +495,7 @@ public class KernelFrame extends JFrame implements Runnable {
 			// while写在try块里时,只要有一次异常就跳出来了结束线程
 			while (true) {
 				s = dis.readUTF();// 不停地从输入流接收
+				System.out.println(s);// 调试输出
 				/* 针对不同类型的消息做不同的事情 */
 				// 如果是服务器回送的用于创建资料卡的消息
 				// 为了防止快速点击造成的多窗体bug,要判空
