@@ -15,6 +15,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import Kernel.KernelFrame;
@@ -28,7 +29,8 @@ public class DataCardFrame extends JFrame {
 
 	// 组件
 	JLabel jl_myhd;// 放头像
-	JTextField jtf_nm, jtf_sig;// 昵称,个性签名
+	JTextField jtf_nm;// 昵称
+	JTextArea jta_sgntr;// 个性签名
 	JLabel jl_pswd1, jl_pswd2;// 新密码两个标签
 	JPasswordField jpf_pswd1, jpf_pswd2;// 新密码两个密码框
 	JLabel jl_ml, jl_fml;// 男女两个标签
@@ -39,6 +41,8 @@ public class DataCardFrame extends JFrame {
 	ImageIcon ii_fml = new ImageIcon("./krnl_pic/female.png");
 	Font fnt_all = new Font("黑体", 1, 20);// 通用字体
 	Color clr_all = new Color(230, 240, 230);
+	Color clr_ml = new Color(120, 200, 230);// 男性颜色
+	Color clr_fml = new Color(230, 120, 230);// 女性颜色
 
 	// 其它
 	DataOutputStream dos;// KernelFrame传进来的输出流
@@ -69,7 +73,7 @@ public class DataCardFrame extends JFrame {
 		// 用这个ImageIcon对象设置头像入JLabel
 		jl_myhd = new JLabel(ii_myhd);
 		jl_myhd.setOpaque(true);// 设置JLabel为不透明才能看见底色(作边框)
-		jl_myhd.setBackground(Color.WHITE);// 底色白色作边框
+		// jl_myhd.setBackground(Color.WHITE);// 底色作边框
 		jl_myhd.setBounds(20, 20, 140, 140);// 大小稍多一截作边框
 		this.add(jl_myhd);
 
@@ -104,8 +108,9 @@ public class DataCardFrame extends JFrame {
 				ii_fml = new ImageIcon("./krnl_pic/female.png");
 				ii_fml.setImage(ii_fml.getImage().getScaledInstance(60, 60, Image.SCALE_DEFAULT));
 				jl_fml.setIcon(ii_fml);
-				// 更改男女
+				// 更改男女,头像边框颜色
 				Sex = 1;
+				jl_myhd.setBackground(clr_ml);
 			}
 		});
 		this.add(jl_ml);
@@ -124,8 +129,9 @@ public class DataCardFrame extends JFrame {
 				ii_ml = new ImageIcon("./krnl_pic/male.png");
 				ii_ml.setImage(ii_ml.getImage().getScaledInstance(60, 60, Image.SCALE_DEFAULT));
 				jl_ml.setIcon(ii_ml);
-				// 更改男女
+				// 更改男女,头像边框颜色
 				Sex = 0;
+				jl_myhd.setBackground(clr_fml);
 			}
 		});
 		this.add(jl_fml);
@@ -134,10 +140,27 @@ public class DataCardFrame extends JFrame {
 		if (Sex == 1) {
 			ii_ml = new ImageIcon("./krnl_pic/male.png");
 			jl_ml.setIcon(ii_ml);
+			jl_myhd.setBackground(clr_ml);
 		} else {
 			ii_fml = new ImageIcon("./krnl_pic/female.png");
 			jl_fml.setIcon(ii_fml);
+			jl_myhd.setBackground(clr_fml);
 		}
+
+		// 文本提示:个性签名
+		JLabel jl = new JLabel("个性签名:");
+		jl.setFont(new Font("黑体", Font.BOLD, 16));
+		jl.setBounds(40, 180, 80, 20);
+		this.add(jl);
+
+		// 文本区域:个性签名
+		jta_sgntr = new JTextArea(5, 10);
+		jta_sgntr.setEditable(false);
+		jta_sgntr.setLineWrap(true);
+		jta_sgntr.setFont(fnt_all);
+		jta_sgntr.setText(Signature);
+		jta_sgntr.setBounds(20, 200, 360, 200);
+		this.add(jta_sgntr);
 
 		// 窗体相关
 		this.setBounds(200, 100, 400, 500);
