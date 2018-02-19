@@ -23,6 +23,8 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import Other.DataCardFrame;
+
 //主要界面,同时作为通信接收线程的目标对象
 public class KernelFrame extends JFrame implements Runnable {
 	// 组件
@@ -44,6 +46,8 @@ public class KernelFrame extends JFrame implements Runnable {
 	public static HashMap<String, FrndChatFrame> hm_usrTOfcf = new HashMap<String, FrndChatFrame>();
 	// 存放<联系人账户,联系人结点的引用>的哈希表
 	public static HashMap<String, FrndNode> hm_usrTOfn = new HashMap<String, FrndNode>();
+	// 个人资料卡,只能打开一张
+	DataCardFrame dcf;
 
 	// 其它
 	// 联系人树的渲染器
@@ -137,6 +141,18 @@ public class KernelFrame extends JFrame implements Runnable {
 			public void mouseExited(MouseEvent e) {
 				jl_myhd.setBackground(Color.WHITE);
 			}
+
+			// 鼠标单击
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// 打开资料卡,传入数据输出流(只向服务器写)
+				if (dcf == null)
+					dcf = new DataCardFrame(dos);
+				dcf.setVisible(true);
+				dcf.requestFocus();
+				dcf.setExtendedState(JFrame.NORMAL);
+			}
+
 		});
 		this.add(jl_myhd);
 
@@ -296,7 +312,6 @@ public class KernelFrame extends JFrame implements Runnable {
 						FrndNode fn_end = (FrndNode) tp_clk.getLastPathComponent();
 						// 只要有账号,说明是ChatCat用户
 						if (fn_end.UsrNum != null) {
-							// TODO
 							// 打开聊天窗口,传入这个用户节点,同时这个聊天窗口的引用存进哈希表
 							// 特判一下:窗口尚未打开过,即这个窗口没有用new创建过,即不包含这个键值对
 							if (!hm_usrTOfcf.containsKey(fn_end.UsrNum)) {
@@ -304,18 +319,21 @@ public class KernelFrame extends JFrame implements Runnable {
 							}
 							// 如果窗口已经打开过了,它也许是点击x被隐藏了,也许已经打开而且没隐藏
 							else {
-								// 这两种情况都直接让其可见就可以了
+								// 让其可见,处于正常扩展状态,申请焦点
 								hm_usrTOfcf.get(fn_end.UsrNum).setVisible(true);
+								hm_usrTOfcf.get(fn_end.UsrNum).setExtendedState(JFrame.NORMAL);
+								hm_usrTOfcf.get(fn_end.UsrNum).requestFocus();
+								// TODO
 								// 下面是尝试暂时置顶的失败代码
 								// hm_usrTOfcf.get(fn_end.UsrNum).requestFocus();
 								// 没找到临时设置最前面的方法,不妨让每个窗体都始终在最前面,则他们有先后
 								// hm_usrTOfcf.get(fn_end.UsrNum).setAlwaysOnTop(true);
 							}
-							try {
-								dos.writeUTF(fn_end.Name);
-							} catch (IOException e1) {
-								e1.printStackTrace();
-							}
+							// try {
+							// dos.writeUTF(fn_end.Name);
+							// } catch (IOException e1) {
+							// e1.printStackTrace();
+							// }
 							// System.out.println(fn_end.Name);//测试输出
 						}
 					}
@@ -374,9 +392,12 @@ public class KernelFrame extends JFrame implements Runnable {
 						// 不等用户双击,立即为没创建的窗体创建并写入哈希表
 						hm_usrTOfcf.put(str_frm, new FrndChatFrame(fn_ext));
 					}
-					// 如果窗体创建了但当前处于关闭状态(即不可见状态)
-					else if (hm_usrTOfcf.get(str_frm).isVisible() == false) {
-						// TODO 头像闪烁
+					// 如果窗体创建了,可能是最小化了,可能是隐藏了
+					else {
+						// 让其可见,处于正常扩展状态,申请焦点
+						hm_usrTOfcf.get(str_frm).setVisible(true);
+						hm_usrTOfcf.get(str_frm).setExtendedState(JFrame.NORMAL);
+						hm_usrTOfcf.get(str_frm).requestFocus();
 					}
 					// 将消息的内容展示到对应的对话框上
 					hm_usrTOfcf.get(str_frm).jta_rcv.append("[对方]:" + str_msg + "\n");

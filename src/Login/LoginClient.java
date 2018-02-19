@@ -16,10 +16,12 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
@@ -41,6 +43,8 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 	// 附加资源
 	String str_nmbr = null;// 账户名(账号)
 	String str_pswd;// 密码
+	ImageIcon ii_log;// 登录背景图
+	JLabel jl_log;// 存这张图用的标签
 
 	// 其它
 	// 通用文本提示字体
@@ -109,12 +113,11 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 		// 标签:注册
 		jl_sgn = new JLabel("立即注册");
 		jl_sgn.setFont(fnt_sml);
-		jl_sgn.setForeground(Color.BLUE);
+		jl_sgn.setForeground(Color.WHITE);
 		jl_sgn.setBounds(220, 38, 90, 20);
 		jl_sgn.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				// TODO 注册
 				new SignUpClient();
 			}
 		});
@@ -123,7 +126,7 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 		// 标签:找回密码
 		jl_fndPswd = new JLabel("找回密码");
 		jl_fndPswd.setFont(fnt_sml);
-		jl_fndPswd.setForeground(Color.BLUE);
+		jl_fndPswd.setForeground(Color.WHITE);
 		jl_fndPswd.setBounds(220, 78, 90, 20);
 		jl_fndPswd.addMouseListener(new MouseAdapter() {
 			@Override
@@ -139,7 +142,16 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setVisible(true);
 		this.setResizable(false);
-		this.validate();
+		// this.validate();
+
+		// 登录背景图的设置
+		ii_log = new ImageIcon("./krnl_pic/login.jpeg");
+		jl_log = new JLabel(ii_log);
+		jl_log.setBounds(0, 0, this.getWidth(), this.getHeight());
+		// 放入LayeredPane的最底层
+		this.getLayeredPane().add(jl_log, new Integer(Integer.MIN_VALUE));
+		// 将其上的ContetPane设置为透明才能看见LayeredPane
+		((JPanel) this.getContentPane()).setOpaque(false);
 	}
 
 	// 连接到后端程序服务器

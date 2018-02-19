@@ -1,5 +1,6 @@
 package Login;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -287,6 +288,7 @@ public class SignUpClient extends JFrame implements Runnable {
 				}
 			}
 		});
+		this.getContentPane().setBackground(new Color(220, 240, 230));
 	}
 
 	// 连接到后端程序服务器
