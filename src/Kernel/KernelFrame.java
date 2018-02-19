@@ -370,7 +370,7 @@ public class KernelFrame extends JFrame implements Runnable {
 				}
 			}
 
-			// // TODO 鼠标进入
+			// 鼠标进入
 			// @Override
 			// public void mouseEntered(MouseEvent e) {
 			// // 按照鼠标进入的坐标点获取路径
@@ -494,6 +494,10 @@ public class KernelFrame extends JFrame implements Runnable {
 							dcf.jtf_nm.setEditable(false);
 							dcf.jta_sgntr.setEditable(false);
 							dcf.jb_lck.setEnabled(true);
+							// TODO 头像同步修改
+							// 昵称同步修改
+							jl_mynm.setText(dcf.jtf_nm.getText());
+							// TODO 签名档同步修改
 						}
 						// 资料卡关了,从本窗体通知用户
 						else {
@@ -517,7 +521,6 @@ public class KernelFrame extends JFrame implements Runnable {
 			}
 		} catch (IOException e) {
 			// 在客户端成功登录并保持连接的情况下服务器关闭会发生此异常
-			// TODO 断开连接,头像变黑,警告框
 			this.setTitle("ChatCat[x]连接已断开");
 			JOptionPane.showMessageDialog(this, "与服务器断开连接\n客户端程序将退出");
 			System.exit(0);// 结束程序
