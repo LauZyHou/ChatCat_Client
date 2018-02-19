@@ -32,7 +32,7 @@ public class AddFrndFrame extends JFrame {
 	JButton jb_clr, jb_qry, jb_add;
 	// JList相关
 	JList<String> jl;
-	DefaultListModel<String> dlm;// JList数据模型
+	public DefaultListModel<String> dlm;// JList数据模型
 
 	// 其它
 	DataOutputStream dos;
@@ -154,10 +154,8 @@ public class AddFrndFrame extends JFrame {
 		});
 		this.add(jb_add);
 
-		// JList模型
+		// JList数据模型
 		dlm = new DefaultListModel<String>();
-		dlm.addElement("牛逼\\t\\t啊");
-		dlm.addElement("ok6666666\\t\\t666");
 
 		// JList
 		jl = new JList<String>();

@@ -563,6 +563,46 @@ public class KernelFrame extends JFrame implements Runnable {
 						}
 					}
 				}
+				// 如果是服务器回送的加好友查询非空结果
+				else if (s.startsWith("[addFrnd]")) {
+					// 确保加好友窗体未析构
+					if (aff != null) {
+						// 先清空数据模型
+						aff.dlm.clear();
+						// 由双#的下标控制循环,在循环中变化
+						int i = 1;
+						int idx_dblShrp = MyTools.indexOf(s, i++, "##");
+						// 截取的开始位置,在循环中变化
+						int idx_now = s.indexOf("]") + 1;
+						// 当没有下一个双sharp时结束循环
+						while (idx_dblShrp != -1) {
+							// 截取出查找到的这个用户的那部分
+							String nowUsr = s.substring(idx_now, idx_dblShrp);
+							// 解析这部分,性别从1/0转成男/女
+							String nowUsrNum = nowUsr.substring(0, nowUsr.indexOf("#"));
+							String nowName = nowUsr.substring(nowUsr.indexOf("#") + 1, nowUsr.lastIndexOf("#"));
+							String Sex = nowUsr.substring(nowUsr.lastIndexOf("#") + 1).equals("1") ? "男" : "女";
+							// System.out.println(nowUsrNum + nowName + Sex);
+							// 重排写入加好友窗体的JList模型中
+							aff.dlm.addElement(nowUsrNum + "      " + Sex + "      " + nowName);
+							// 下标转移:下一个开始位置是双#之后
+							idx_now = idx_dblShrp + 2;
+							// 下标转移:i在上个寻下标中已经跳变
+							idx_dblShrp = MyTools.indexOf(s, i++, "##");
+						}
+						aff.validate();
+					}
+					// 如果加好友窗体已经析构了,不需做什么
+					else {
+					}
+				}
+				// 如果是服务器回送的加好友查询为空结果
+				else if (s.equals("[addFrnd_None]")) {
+					if (aff != null)// 如果没有析构窗体,JList的数据模型清空
+						aff.dlm.clear();
+					// 不论是否析构了窗体都通知一下
+					JOptionPane.showMessageDialog(null, "[!]查询为空");
+				}
 				// System.out.println(s);// 测试输出
 			}
 		} catch (IOException e) {
