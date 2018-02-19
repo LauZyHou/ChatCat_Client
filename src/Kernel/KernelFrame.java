@@ -149,8 +149,9 @@ public class KernelFrame extends JFrame implements Runnable {
 				// 这样才能保证资料卡是最新的
 				if (dcf == null) {
 					try {
-						// 发送请求给服务器,在接收消息处new而不需要在这里new
-						dos.writeUTF("[mycard]" + str_nmbr);
+						// 发送获取资料卡请求给服务器
+						// 在接收消息处new而不需要在这里new
+						dos.writeUTF("[mycard]");
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					}

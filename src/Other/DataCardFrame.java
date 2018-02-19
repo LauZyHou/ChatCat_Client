@@ -18,6 +18,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -197,6 +198,12 @@ public class DataCardFrame extends JFrame {
 				// TODO HeadID头像的更新
 				Name = jtf_nm.getText();
 				Signature = jta_sgntr.getText();
+				// 个签的长度在客户端拦截
+				if (Signature.length() >= 40) {
+					JOptionPane.showMessageDialog(null, "[x]个性签名太长了");
+					jta_sgntr.grabFocus();
+					return;
+				}
 				try {
 					jb_snd.setEnabled(false);// 在服务器回送前关闭使用
 					// 拼起来发送给服务器,因为服务器单开一个[消息处理线程],会知道帐号
