@@ -14,23 +14,27 @@ public class AddFrndFrame extends JFrame {
 
 	// 构造器
 	public AddFrndFrame(DataOutputStream dos) {
+		super("ChatCat添加好友");
 		this.dos = dos;
 		myInit();// 窗体初始化
 	}
 
 	// 窗体初始化
 	private void myInit() {
+		// 提示:id
 
-		this.setBounds(250, 150, 300, 300);
-		this.setVisible(true);
-		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		// 窗体相关
+		this.setBounds(300, 200, 400, 300);
+		this.setResizable(false);
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				dispose();
+				// dispose();
 				KernelFrame.aff = null;
 				System.gc();
 			}
 		});
+		this.setVisible(true);
 	}
 }

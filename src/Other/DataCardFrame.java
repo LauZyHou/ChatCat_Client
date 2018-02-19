@@ -222,11 +222,13 @@ public class DataCardFrame extends JFrame {
 		this.getContentPane().setBackground(clr_all);
 		this.setResizable(false);
 		this.setVisible(true);
-		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				dispose();// 释放自己窗体资源
+				// 把这行注释!然后setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE)
+				// 否则有时会出现运行时错误
+				// dispose();// 释放自己窗体资源
 				KernelFrame.dcf = null;// 使这个窗体不被引用
 				System.gc();// 立即要求JVM进行垃圾回收
 			}
