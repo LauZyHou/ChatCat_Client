@@ -47,6 +47,8 @@ public class KernelFrame extends JFrame implements Runnable {
 	JButton jb_frnd, jb_err, jb_msg, jb_del, jb_crtgrp;
 	// 滚动条:其它面板
 	JScrollPane jsp_othr;
+	// JTree
+	JTree jt_frnd;
 
 	// 资源
 	// 存放解析后的好友信息串
@@ -334,7 +336,7 @@ public class KernelFrame extends JFrame implements Runnable {
 		// 用实现了TreeModel接口的DefaultTreeModel类指定树的根结点
 		DefaultTreeModel dtm_frnd = new DefaultTreeModel(fn_root);
 		// 建立JTree树
-		JTree jt_frnd = new JTree(dtm_frnd);
+		jt_frnd = new JTree(dtm_frnd);
 		// 为这棵树设定渲染器
 		jt_frnd.setCellRenderer(this.ftcr);
 		// 当JPanel使用空布局时,这里需要指明位置和大小
@@ -591,9 +593,8 @@ public class KernelFrame extends JFrame implements Runnable {
 							idx_dblShrp = MyTools.indexOf(s, i++, "##");
 						}
 						aff.validate();
-					}
-					// 如果加好友窗体已经析构了,不需做什么
-					else {
+					} else {
+						// 如果加好友窗体已经析构了,不需做什么
 					}
 				}
 				// 如果是服务器回送的加好友查询为空结果
@@ -608,6 +609,22 @@ public class KernelFrame extends JFrame implements Runnable {
 					// 不论是否析构了窗体都通知一下
 					JOptionPane.showMessageDialog(null, s.substring(s.indexOf("]") + 1));
 				}
+				// 如果服务器要求自己更新界面
+				else if (s.startsWith("[refresh]")) {
+					// 用第一次构造界面的方式,先构造一个伪的消息头
+					String str = "#用户名:" + str_name + "#头像ID:" + str_id + s.substring(s.indexOf("]") + 1);
+					// 用这个伪的消息给自己解析
+					myResolve(str);
+					// 移除联系人面板上面的所有组件
+					jp_ppl.removeAll();
+					// 绘制联系人面板
+					pplDraw();
+				}
+				// 如果服务器要求显示提示
+				else if (s.startsWith("[!]")) {
+					JOptionPane.showMessageDialog(null, s);
+				}
+
 				// System.out.println(s);// 测试输出
 			}
 		} catch (IOException e) {
