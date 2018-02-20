@@ -46,7 +46,7 @@ public class DataCardFrame extends JFrame {
 	ImageIcon ii_ml = new ImageIcon("./krnl_pic/male.png");
 	ImageIcon ii_fml = new ImageIcon("./krnl_pic/female.png");
 	Font fnt_all = new Font("黑体", 1, 20);// 通用字体
-	Color clr_all = new Color(230, 240, 230);
+	Color clr_all = new Color(225, 220, 240);
 	Color clr_ml = new Color(120, 200, 230);// 男性颜色
 	Color clr_fml = new Color(230, 120, 230);// 女性颜色
 

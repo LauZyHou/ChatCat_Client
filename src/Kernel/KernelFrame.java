@@ -45,6 +45,8 @@ public class KernelFrame extends JFrame implements Runnable {
 	JPanel jp_ppl, jp_grp, jp_othr;// 联系人,群聊,其它
 	// 添加好友,报告错误,处理事务,批量删除,创建群聊
 	JButton jb_frnd, jb_err, jb_msg, jb_del, jb_crtgrp;
+	// 滚动条:其它面板
+	JScrollPane jsp_othr;
 
 	// 资源
 	// 存放解析后的好友信息串
@@ -77,6 +79,8 @@ public class KernelFrame extends JFrame implements Runnable {
 	public static Color clr_othr = new Color(230, 240, 230);
 	// 鼠标在其它组件上时变成的颜色
 	public static Color clr_othr2 = new Color(210, 240, 210);
+	// 联系人面板的颜色
+	public static Color clr_ppl = new Color(220, 220, 255);
 
 	// 构造器(传入登录成功发来的信息,建立好连接的Socket对象,账户名)
 	public KernelFrame(String s, Socket sckt, String nmbr) {
@@ -222,6 +226,8 @@ public class KernelFrame extends JFrame implements Runnable {
 				jb_ppl.setEnabled(true);
 				jb_othr.setEnabled(true);
 				jb_grp.setEnabled(false);
+				// 让其它面板的滚动条不可用
+				jsp_othr.setEnabled(false);
 			}
 		});
 		jb_grp.setFocusable(false);
@@ -240,6 +246,8 @@ public class KernelFrame extends JFrame implements Runnable {
 				jb_ppl.setEnabled(true);
 				jb_grp.setEnabled(true);
 				jb_othr.setEnabled(false);
+				// 让其它面板的滚动条恢复可用
+				jsp_othr.setEnabled(true);
 			}
 		});
 		jb_othr.setFocusable(false);
@@ -249,14 +257,14 @@ public class KernelFrame extends JFrame implements Runnable {
 		jp_ppl = new JPanel();
 		jp_ppl.setLayout(null);
 		jp_ppl.setBounds(0, 150, 270, 480);
-		jp_ppl.setBackground(new Color(220, 220, 255));
+		jp_ppl.setBackground(clr_ppl);
 		jp_ppl.setVisible(true);
 		this.add(jp_ppl);
 
 		// 群聊面板
 		jp_grp = new JPanel();
 		jp_grp.setLayout(null);
-		jp_grp.setBounds(0, 150, 270, 480);
+		jp_grp.setBounds(0, 150, 270, 500);// 这里要多高才能遮挡下面的
 		jp_grp.setBackground(new Color(240, 230, 230));
 		jp_grp.setVisible(false);// 默认不显示
 		this.add(jp_grp);
@@ -270,7 +278,7 @@ public class KernelFrame extends JFrame implements Runnable {
 		jp_othr.setVisible(false);// 默认不显示
 		// 为JPanel设定滚动条一定要先setPreferredSize而且要比滚动条大
 		jp_othr.setPreferredSize(new Dimension(270, 500));
-		JScrollPane jsp_othr = new JScrollPane(jp_othr);
+		jsp_othr = new JScrollPane(jp_othr);
 		// 设置滚动速度快一些
 		JScrollBar jsb = jsp_othr.getVerticalScrollBar();
 		jsb.setUnitIncrement(10);
@@ -534,9 +542,8 @@ public class KernelFrame extends JFrame implements Runnable {
 				else if (s.startsWith("[changecard]")) {
 					// 修改成功
 					if (s.contains("success")) {
-						// 如果资料卡还开着,从资料卡通知用户
+						// 如果资料卡还开着
 						if (dcf != null) {
-							JOptionPane.showMessageDialog(dcf, "[v]修改成功");
 							dcf.jtf_nm.setEditable(false);
 							dcf.jta_sgntr.setEditable(false);
 							dcf.jb_lck.setEnabled(true);
@@ -545,22 +552,15 @@ public class KernelFrame extends JFrame implements Runnable {
 							jl_mynm.setText(dcf.jtf_nm.getText());
 							// TODO 签名档同步修改
 						}
-						// 资料卡关了,从本窗体通知用户
-						else {
-							JOptionPane.showMessageDialog(this, "[x]修改失败");
-						}
+						JOptionPane.showMessageDialog(null, "[v]修改成功");
 					}
 					// 修改失败
 					else {
-						// 如果资料卡还开着,从资料卡通知用户
+						// 如果资料卡还开着
 						if (dcf != null) {
-							JOptionPane.showMessageDialog(dcf, "[x]修改失败");
 							dcf.jb_snd.setEnabled(true);// 发送又可用了
 						}
-						// 资料卡关了,从本窗体通知用户
-						else {
-							JOptionPane.showMessageDialog(this, "[x]修改失败");
-						}
+						JOptionPane.showMessageDialog(null, "[x]修改失败");
 					}
 				}
 				// 如果是服务器回送的加好友查询非空结果
@@ -601,7 +601,12 @@ public class KernelFrame extends JFrame implements Runnable {
 					if (aff != null)// 如果没有析构窗体,JList的数据模型清空
 						aff.dlm.clear();
 					// 不论是否析构了窗体都通知一下
-					JOptionPane.showMessageDialog(null, "[!]查询为空");
+					JOptionPane.showMessageDialog(null, "[!]查询结果为空");
+				}
+				// 如果是服务器回送的加好友存到服务器内存的返回结果
+				else if (s.startsWith("[youradd]")) {
+					// 不论是否析构了窗体都通知一下
+					JOptionPane.showMessageDialog(null, s.substring(s.indexOf("]") + 1));
 				}
 				// System.out.println(s);// 测试输出
 			}

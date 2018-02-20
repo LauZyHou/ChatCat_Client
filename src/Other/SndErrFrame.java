@@ -13,6 +13,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
+import Kernel.KernelFrame;
+
 public class SndErrFrame extends JFrame {
 	JLabel jl;
 	JButton jb;
@@ -63,7 +65,7 @@ public class SndErrFrame extends JFrame {
 			}
 		});
 		this.add(jb);
-
+		this.getContentPane().setBackground(KernelFrame.clr_othr);
 		this.setLayout(new FlowLayout());// 流式布局
 		this.setBounds(300, 200, 400, 300);
 		this.setResizable(false);

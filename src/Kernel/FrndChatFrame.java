@@ -125,6 +125,7 @@ public class FrndChatFrame extends JFrame {
 				// KernelFrame.hm_usrTOfcf.remove(ctptUsr);
 			}
 		});
+		this.getContentPane().setBackground(KernelFrame.clr_ppl);
 	}
 
 	// 发送时做的事情,将发送时的异常抛出去,在调用send()时捕获

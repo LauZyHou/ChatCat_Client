@@ -120,12 +120,12 @@ public class AddFrndFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					// 有帐号时按帐号查找
+					// 有帐号时服务器按帐号查找
 					if (jtf_usrnm.getText().length() > 0) {
 						dos.writeUTF("[addFrnd_U]" + jtf_usrnm.getText());
 						jtf_nm.setText("");// 设空告诉用户没有使用
 					}
-					// 没有帐号时按名称LIKE匹配
+					// 没有帐号时服务器按名称LIKE匹配
 					else if (jtf_nm.getText().length() > 0) {
 						dos.writeUTF("[addFrnd_N]" + jtf_nm.getText());
 					}
@@ -148,9 +148,27 @@ public class AddFrndFrame extends JFrame {
 		jb_add.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-
+				String snd = jl.getSelectedValue();
+				// 没有选择一项时
+				if (snd == null) {
+					JOptionPane.showMessageDialog(null, "[x]缺少选择");
+					return;
+				} else {
+					String id = snd.substring(0, snd.indexOf(" "));
+					// 尝试添加自己时
+					if (id.equals(KernelFrame.str_nmbr)) {
+						JOptionPane.showMessageDialog(null, "[x]不能添加自己为好友");
+						return;
+					}
+					try {
+						// 向服务器发送加好友申请,由服务器查数据库判定是否是重复好友
+						dos.writeUTF("[add]" + id);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
 			}
+
 		});
 		this.add(jb_add);
 
