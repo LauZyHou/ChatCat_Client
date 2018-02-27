@@ -2,7 +2,7 @@ package Login;
 
 public class Main {
 	// 服务器ip
-	public static String ServerIp = "192.168.1.101";
+	public static String ServerIp = "192.168.1.102";
 
 	// 客户端程序入口
 	public static void main(String[] args) {
