@@ -162,7 +162,7 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 			return;
 		try {
 			// 网络地址对象:后端程序服务器
-			InetAddress ina = InetAddress.getByName("192.168.0.108");
+			InetAddress ina = InetAddress.getByName(Main.ServerIp);
 			// 网络地址组合端口的套接字对象:后端程序网络地址对象,3838端口
 			InetSocketAddress isa = new InetSocketAddress(ina, 3838);
 			// 尝试连接到服务器,可能发生阻塞

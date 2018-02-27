@@ -1,6 +1,9 @@
 package Login;
 
 public class Main {
+	// 服务器ip
+	public static String ServerIp = "192.168.1.101";
+
 	// 客户端程序入口
 	public static void main(String[] args) {
 		LoginClient lc = new LoginClient();// 新建客户端登录窗口
