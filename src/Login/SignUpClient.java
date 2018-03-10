@@ -189,6 +189,8 @@ public class SignUpClient extends JFrame implements Runnable {
 				trySignUp();// 尝试注册
 			}
 		});
+		jb_sgn.setFocusable(false);
+		jb_sgn.setBackground(new Color(180, 230, 250));
 		this.add(jb_sgn);
 
 		// // 标签:头像

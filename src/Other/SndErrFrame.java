@@ -1,6 +1,5 @@
 package Other;
 
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,12 +32,14 @@ public class SndErrFrame extends JFrame {
 		// 文本提示
 		jl = new JLabel("描述发生的BUG并提交:");
 		jl.setFont(new Font("黑体", 1, 22));
+		jl.setBounds(90, 10, 250, 30);
 		this.add(jl);
 
 		// 文本区域
 		jta = new JTextArea(8, 18);
 		jta.setFont(new Font("黑体", 1, 20));
 		jta.setLineWrap(true);
+		jta.setBounds(50, 40, 300, 180);
 		this.add(jta);
 
 		// 发送按钮
@@ -64,9 +65,13 @@ public class SndErrFrame extends JFrame {
 				}
 			}
 		});
+		jb.setBounds(140, 230, 110, 30);
+		jb.setBackground(KernelFrame.clr_othr2);
 		this.add(jb);
+
+		// 窗体
 		this.getContentPane().setBackground(KernelFrame.clr_othr);
-		this.setLayout(new FlowLayout());// 流式布局
+		this.setLayout(null);// 流式布局
 		this.setBounds(300, 200, 400, 300);
 		this.setResizable(false);
 		this.setVisible(true);

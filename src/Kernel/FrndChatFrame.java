@@ -1,5 +1,6 @@
 package Kernel;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -92,6 +93,20 @@ public class FrndChatFrame extends JFrame {
 		jtf_inpt = new JTextField(20);
 		jtf_inpt.setFont(ft_jt);
 		jtf_inpt.setBounds(20, 300, 300, 40);
+		jtf_inpt.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+				// 按下了回车,并且有内容时允许发送
+				if (e.getKeyChar() == '\n' && jtf_inpt.getText().length() > 0) {
+					try {
+						send();// 发送给服务器
+					} catch (IOException e1) {
+						e1.printStackTrace();// 发送失败
+					}
+				}
+				// 按完回车焦点一定还在这个发送栏里,不必重新取回
+			}
+		});
 		this.add(jtf_inpt);
 
 		// 发送按钮
@@ -111,20 +126,7 @@ public class FrndChatFrame extends JFrame {
 				jtf_inpt.grabFocus();// 取回焦点
 			}
 		});
-		jtf_inpt.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyTyped(KeyEvent e) {
-				// 按下了回车,并且有内容时允许发送
-				if (e.getKeyChar() == '\n' && jtf_inpt.getText().length() > 0) {
-					try {
-						send();// 发送给服务器
-					} catch (IOException e1) {
-						e1.printStackTrace();// 发送失败
-					}
-				}
-				// 按完回车焦点一定还在这个发送栏里,不必重新取回
-			}
-		});
+		jb_snd.setBackground(new Color(210, 200, 250));
 		this.add(jb_snd);
 
 		// 有关窗体

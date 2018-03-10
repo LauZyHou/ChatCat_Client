@@ -108,6 +108,8 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 		jb_lgn.setEnabled(false);// 在连接到服务器之前不可用
 		jb_lgn.setBounds(110, 130, 80, 30);
 		jb_lgn.addActionListener(this);
+		jb_lgn.setFocusable(false);
+		jb_lgn.setBackground(new Color(210, 200, 250));
 		this.add(jb_lgn);
 
 		// 标签:注册
@@ -145,7 +147,7 @@ public class LoginClient extends JFrame implements ActionListener, Runnable {
 		// this.validate();
 
 		// 登录背景图的设置
-		ii_log = new ImageIcon("./krnl_pic/login.jpeg");
+		ii_log = new ImageIcon("./krnl_pic/login2.jpeg");
 		jl_log = new JLabel(ii_log);
 		jl_log.setBounds(0, 0, this.getWidth(), this.getHeight());
 		// 放入LayeredPane的最底层

@@ -186,6 +186,8 @@ public class DataCardFrame extends JFrame {
 				jb_lck.setEnabled(false);// 自己暂时不可用
 			}
 		});
+		jb_lck.setBackground(new Color(210, 200, 250));
+		jb_lck.setFocusable(false);
 		this.add(jb_lck);
 
 		// 按钮:发送
@@ -213,6 +215,8 @@ public class DataCardFrame extends JFrame {
 				}
 			}
 		});
+		jb_snd.setBackground(Color.WHITE);
+		jb_snd.setFocusable(false);
 		this.add(jb_snd);
 
 		// 窗体相关

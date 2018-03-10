@@ -54,7 +54,7 @@ public class KernelFrame extends JFrame implements Runnable {
 
 	// 资源
 	// 存放解析后的好友信息串
-	LinkedList<String> ll_ppl = new LinkedList<String>();
+	public static LinkedList<String> ll_ppl = new LinkedList<String>();
 	// 存放打开的<联系人账号,联系人聊天窗口FrndChatFrame的引用>映射
 	// 用static静态类型方便在聊天窗口关闭时操作之
 	// (在另一个类里难以拿到这个类对象的引用,而这个类只创建这一个对象)

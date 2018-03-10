@@ -102,6 +102,7 @@ public class FrndCardFrame extends JFrame {
 		jta_sgntr.setEditable(false);
 		// jta_sgntr.setEnabled(false);
 		jta_sgntr.setBounds(8, 110, 180, 110);
+		jta_sgntr.setLineWrap(true);
 		this.add(jta_sgntr);
 
 		// 确认

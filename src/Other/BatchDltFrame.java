@@ -16,8 +16,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 
 import Kernel.KernelFrame;
+import Kernel.MyTools;
 
 //批量删除好友
 public class BatchDltFrame extends JFrame {
@@ -26,16 +28,17 @@ public class BatchDltFrame extends JFrame {
 	JTable jt = null;
 	JScrollPane jsp = null;
 	JButton jb_dlt = new JButton("删除TA们");
-	JButton jb_bye = new JButton("到此为止");
+	JButton jb_bye = new JButton("放弃删除");
 
 	// 表头
 	String[] headers = { "帐号", "昵称", "个性签名" };
 
 	// 其它
 	Font myft = new Font("微软雅黑", 1, 20);;
-	String[][] frndMsg = { { "AA", "bb", "CC" }, { "cc" }, { "cc" }, { "cc" }, { "cc" } };// 存表的内容
+	String[][] frndMsg = null;// 存表的内容
 	DefaultTableModel dtm = null;// JTable模型
 	BatchDltFrame mypgl = this;// 自己的引用,用于监听器内部
+	TableColumn firsetColumn = null;// 用于设置列宽
 
 	// 构造器
 	public BatchDltFrame() {
@@ -45,16 +48,22 @@ public class BatchDltFrame extends JFrame {
 		jl.setBounds(40, 10, 350, 30);
 		this.add(jl);
 
+		myResolve();// 解析有哪些好友
+
 		// JTabel相关
 		dtm = new DefaultTableModel(frndMsg, headers);
 		jt = new JTable(dtm);
 		jt.setFont(myft);
+		jt.setRowHeight(30);// 需手动设置行宽
+		// 设置第一列列宽
+		firsetColumn = jt.getColumnModel().getColumn(0);
+		firsetColumn.setPreferredWidth(25);
 		// jt.setBackground(KernelFrame.clr_othr2);
 		jt.getTableHeader().setFont(myft);
 		jt.getTableHeader().setBackground(new Color(220, 255, 150));
 		jt.getTableHeader().setReorderingAllowed(false);// 表头不可拖动
 		jt.setFocusable(false);
-		JScrollPane jsp = new JScrollPane();
+		jsp = new JScrollPane();
 		// 放在JScrollPane里才能显示表头
 		jsp.setViewportView(jt);
 		jsp.getViewport().setBackground(new Color(230, 230, 255));
@@ -93,7 +102,7 @@ public class BatchDltFrame extends JFrame {
 						slctFrndNm += frndMsg[i][0];
 						ll.add("" + frndMsg[i][0]);// 顺便加到链表中,为后面发消息做准备
 						slctFrndNm += " ";
-						slctFrndNm += frndMsg[i][0];
+						slctFrndNm += frndMsg[i][1];
 					}
 					int n = JOptionPane.showConfirmDialog(null, "注意!该操作会使您失去以下好友:" + slctFrndNm, "批量删除",
 							JOptionPane.YES_NO_OPTION);
@@ -105,9 +114,11 @@ public class BatchDltFrame extends JFrame {
 						} catch (IOException e1) {
 							e1.printStackTrace();
 						} finally {
-							// FIXME
+							// 不论结果如何,销毁这个窗口
+							dispose();
+							KernelFrame.bdf = null;
+							System.gc();
 						}
-						System.gc();
 					} else {
 						// 选择了否,啥也不做
 					}
@@ -132,7 +143,27 @@ public class BatchDltFrame extends JFrame {
 		this.setVisible(true);
 	}
 
-	// 按照服务器返回的信息做刷新
+	// 解析有哪些好友
+	private void myResolve() {
+		// 先清空当前好友信息
+		frndMsg = null;
+		System.gc();
+		// 重新申请空间
+		frndMsg = new String[KernelFrame.ll_ppl.size()][3];
+		// 解析并写入该空间
+		int i = 0;// 行索引游标
+		for (String s : KernelFrame.ll_ppl) {
+			// 解析成String类型并写入,它们是按&号分隔的
+			frndMsg[i][0] = s.substring(0, s.indexOf("&"));
+			frndMsg[i][1] = s.substring(s.indexOf("&") + 1, MyTools.indexOf(s, 2, "&"));
+			// String hd = s.substring(MyTools.indexOf(s, 2, "&") + 1, MyTools.indexOf(s, 3,
+			// "&"));
+			frndMsg[i][2] = s.substring(MyTools.indexOf(s, 3, "&") + 1);
+			i += 1;
+		}
+	}
+
+	// 刷新
 	void flushMsg() {
 		if (jsp != null)
 			jsp.removeAll();
