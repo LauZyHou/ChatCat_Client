@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -12,6 +14,9 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+
+import Kernel.KernelFrame;
+import Kernel.MyTools;
 
 // 好友资料卡
 public class FrndCardFrame extends JFrame {
@@ -23,7 +28,8 @@ public class FrndCardFrame extends JFrame {
 	JButton jb_ok, jb_del;// 确认,删除
 
 	// 资源
-	String str_id = "2";
+	String usrNum = "10002";
+	String HeadID = "2";
 	int Sex = 1;// 0女1男
 	ImageIcon ii_hd;
 	String Name = "刘傻逼", Signature = "喵喵";// 昵称,签名档
@@ -43,20 +49,38 @@ public class FrndCardFrame extends JFrame {
 
 		this.setLayout(null);
 		this.setResizable(false);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		this.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				dispose();
+				// 设置为空
+				KernelFrame.hm_usrTOfcf.get(usrNum).fcrdf = null;
+				System.gc();
+			}
+		});
 		this.setVisible(true);
 	}
 
 	// 解析传来的好友详细信息
-	private void myResolve(String str) {
-
+	public void myResolve(String str) {
+		// 帐号(在销毁窗体时会用到)
+		this.usrNum = str.substring(str.indexOf("]") + 1, str.indexOf("#"));
+		// 昵称
+		this.Name = str.substring(MyTools.indexOf(str, 1, "#") + 1, MyTools.indexOf(str, 2, "#"));
+		// 头像号
+		this.HeadID = str.substring(MyTools.indexOf(str, 2, "#") + 1, MyTools.indexOf(str, 3, "#"));
+		// 性别
+		this.Sex = Integer.parseInt(str.substring(MyTools.indexOf(str, 3, "#") + 1, MyTools.indexOf(str, 4, "#")));
+		// 个性签名
+		this.Signature = str.substring(MyTools.indexOf(str, 4, "#") + 1);
 	}
 
 	// 窗体初始化
-	private void myInit() {
+	public void myInit() {
 		// 设定自己的头像
 		// 头像的ImageIcon对象
-		ii_hd = new ImageIcon("./pic/cat" + str_id + ".jpeg");
+		ii_hd = new ImageIcon("./pic/cat" + HeadID + ".jpeg");
 		// 对头像两步缩放
 		ii_hd.setImage(ii_hd.getImage().getScaledInstance(80, 80, Image.SCALE_DEFAULT));
 		// 用这个ImageIcon对象设置头像入JLabel

@@ -19,6 +19,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import Other.FrndCardFrame;
+
 public class FrndChatFrame extends JFrame {
 	// 对方信息资源
 	FrndNode fn_ctpt;// 对方的信息结点,注意复制来的是引用
@@ -36,6 +38,7 @@ public class FrndChatFrame extends JFrame {
 
 	// 其它
 	private Font ft_jt = new Font("黑体", 1, 20);// 发送/接收框字体
+	public FrndCardFrame fcrdf = null;// 该好友的资料卡,仅能通过单击头像打开
 
 	// 构造器,传入双击的那个联系人结点
 	public FrndChatFrame(FrndNode fn) {
@@ -65,7 +68,12 @@ public class FrndChatFrame extends JFrame {
 			// 单击头像
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				// TODO 发送给服务器消息
+				// 发送给服务器消息以获取好友资料
+				try {
+					KernelFrame.dos.writeUTF("[msg]" + ctptUsr);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 			}
 		});
 		jl_hd.setBounds(20, 0, 500, 80);

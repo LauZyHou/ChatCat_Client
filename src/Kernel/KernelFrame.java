@@ -29,6 +29,7 @@ import javax.swing.tree.TreePath;
 
 import Other.AddFrndFrame;
 import Other.DataCardFrame;
+import Other.FrndCardFrame;
 import Other.OthrMouseAdapter;
 import Other.SndErrFrame;
 
@@ -623,6 +624,34 @@ public class KernelFrame extends JFrame implements Runnable {
 				// 如果服务器要求显示提示
 				else if (s.startsWith("[!]")) {
 					JOptionPane.showMessageDialog(null, s);
+				}
+				// 如果服务器要求显示好友资料卡
+				else if (s.startsWith("[frndMsg]")) {
+					// 解析是哪个好友的资料卡
+					String goalFrnd = s.substring(s.indexOf("]") + 1, s.indexOf("#"));
+					// 如果该好友聊天窗体已经关闭了
+					if (hm_usrTOfcf.get(goalFrnd) == null) {
+						// 什么都不做
+					}
+					// 聊天窗口没关闭时才允许打开资料卡
+					else {
+						// 如果资料卡未建立
+						if (hm_usrTOfcf.get(goalFrnd).fcrdf == null) {
+							// 建立资料卡
+							hm_usrTOfcf.get(goalFrnd).fcrdf = new FrndCardFrame(s);
+						}
+						// 如果资料卡已经建立了
+						else {
+							// 重新解析
+							hm_usrTOfcf.get(goalFrnd).fcrdf.myResolve(s);
+							// 重新绘制组件
+							hm_usrTOfcf.get(goalFrnd).fcrdf.myInit();
+							// 展示出来给用户看
+							hm_usrTOfcf.get(goalFrnd).fcrdf.setExtendedState(JFrame.NORMAL);
+							hm_usrTOfcf.get(goalFrnd).fcrdf.requestFocus();
+							hm_usrTOfcf.get(goalFrnd).fcrdf.setVisible(true);
+						}
+					}
 				}
 				// TODO 服务器回送的显示好友信息
 				// System.out.println(s);// 测试输出
