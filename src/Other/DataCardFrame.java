@@ -29,7 +29,7 @@ import Kernel.MyTools;
 //个人资料卡
 public class DataCardFrame extends JFrame {
 	// 存用户的信息
-	String Name, Signature;// 姓名,签名档
+	String Name, Signature;// 昵称,签名档
 	int HeadID, Sex;// 头像号,性别0女1男
 
 	// 组件
@@ -47,8 +47,8 @@ public class DataCardFrame extends JFrame {
 	ImageIcon ii_fml = new ImageIcon("./krnl_pic/female.png");
 	Font fnt_all = new Font("黑体", 1, 20);// 通用字体
 	Color clr_all = new Color(225, 220, 240);
-	Color clr_ml = new Color(120, 200, 230);// 男性颜色
-	Color clr_fml = new Color(230, 120, 230);// 女性颜色
+	public static Color clr_ml = new Color(120, 200, 230);// 男性颜色
+	public static Color clr_fml = new Color(230, 120, 230);// 女性颜色
 
 	// 其它
 	DataOutputStream dos;// KernelFrame传进来的输出流

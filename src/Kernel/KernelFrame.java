@@ -624,7 +624,7 @@ public class KernelFrame extends JFrame implements Runnable {
 				else if (s.startsWith("[!]")) {
 					JOptionPane.showMessageDialog(null, s);
 				}
-
+				// TODO 服务器回送的显示好友信息
 				// System.out.println(s);// 测试输出
 			}
 		} catch (IOException e) {

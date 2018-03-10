@@ -5,6 +5,8 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -59,6 +61,13 @@ public class FrndChatFrame extends JFrame {
 		jl_hd.setIcon(new ImageIcon(img));// 头像放入
 		jl_hd.setText("<HTML>" + ctptNm + "<br>" + ctptSig + "</HTML>");// 名字和个性签名放入
 		jl_hd.setIconTextGap(15);// 设置JLabel文字图片间距
+		jl_hd.addMouseListener(new MouseAdapter() {
+			// 单击头像
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO 发送给服务器消息
+			}
+		});
 		jl_hd.setBounds(20, 0, 500, 80);
 		this.add(jl_hd);
 
