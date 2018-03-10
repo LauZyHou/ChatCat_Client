@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -28,11 +29,11 @@ public class FrndCardFrame extends JFrame {
 	JButton jb_ok, jb_del;// 确认,删除
 
 	// 资源
-	String usrNum = "10002";
-	String HeadID = "2";
-	int Sex = 1;// 0女1男
+	String usrNum;
+	String HeadID;
+	int Sex;// 0女1男
 	ImageIcon ii_hd;
-	String Name = "刘傻逼", Signature = "喵喵";// 昵称,签名档
+	String Name, Signature;// 昵称,签名档
 
 	// 颜色
 	// 背景颜色
@@ -124,8 +125,21 @@ public class FrndCardFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				int n = JOptionPane.showConfirmDialog(null, "确定要删除好友" + Name + "吗?", "删除好友", JOptionPane.YES_NO_OPTION);
 				if (n == JOptionPane.YES_OPTION) {
-					// TODO 发送删除消息
-					System.out.println("删除测试");
+					try {
+						// 向服务器发送删除消息
+						KernelFrame.dos.writeUTF("[dltFrnd]" + usrNum);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+					// System.out.println("删除测试");
+					// hm_usrTOfn会由刷新JTree维护,不需要管
+					// 销毁这个窗口
+					KernelFrame.hm_usrTOfcf.get(usrNum).fcrdf.dispose();
+					// 销毁聊天窗口
+					KernelFrame.hm_usrTOfcf.get(usrNum).dispose();
+					// 维护hm_usrTOfcf表
+					KernelFrame.hm_usrTOfcf.remove(usrNum);
+					System.gc();
 				} else {
 					// 啥也不做
 				}
