@@ -12,19 +12,19 @@ public class FrndNode implements TreeNode {
 	String Name = null;// 网名
 	int HeadID;// 头像号码
 	ImageIcon ii_head = null;// 头像图像
-	String Signature = null;// 个性签名,暂未录入数据库
+	String Signature = null;// 个性签名
 
 	private ArrayList<TreeNode> al_chldrn = null;// 子结点数组,泛型
 	private TreeNode tn_prnt = null;// 父结点,对象上转型
 
 	// 为用户结点使用的构造器
-	public FrndNode(String usr, String nm, int hd) {
+	public FrndNode(String usr, String nm, int hd, String sgntr) {
 		this.UsrNum = usr;
 		this.Name = nm;
 		this.HeadID = hd;
 		// 头像图像按头像号码生成,不必传入
 		this.ii_head = new ImageIcon("./pic/cat" + hd + ".jpeg");
-		this.Signature = "个性签名所在之处";
+		this.Signature = sgntr;
 	}
 
 	// 为分组结点使用的构造器

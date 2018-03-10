@@ -323,12 +323,13 @@ public class KernelFrame extends JFrame implements Runnable {
 		FrndNode fn_blk = new FrndNode("黑名单");// 一级结点
 		// 绘制"我的好友"里的用户结点
 		for (String s : ll_ppl) {
-			// 解析成String类型,它们是按逗号分隔的
-			String usr = s.substring(0, s.indexOf(","));
-			String nm = s.substring(s.indexOf(",") + 1, MyTools.indexOf(s, 2, ","));
-			String hd = s.substring(MyTools.indexOf(s, 2, ",") + 1);
+			// 解析成String类型,它们是按&号分隔的
+			String usr = s.substring(0, s.indexOf("&"));
+			String nm = s.substring(s.indexOf("&") + 1, MyTools.indexOf(s, 2, "&"));
+			String hd = s.substring(MyTools.indexOf(s, 2, "&") + 1, MyTools.indexOf(s, 3, "&"));
+			String sgntr = s.substring(MyTools.indexOf(s, 3, "&") + 1);
 			// 新建这个用户结点,传入解析好的必要的信息
-			FrndNode fn_etc = new FrndNode(usr, nm, Integer.parseInt(hd));
+			FrndNode fn_etc = new FrndNode(usr, nm, Integer.parseInt(hd), sgntr);
 			// 将这个结点放入存<用户账户,用户结点引用>的哈希表中
 			hm_usrTOfn.put(usr, fn_etc);
 			// 挂载到一级结点上
