@@ -28,6 +28,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 import Other.AddFrndFrame;
+import Other.BatchDltFrame;
 import Other.DataCardFrame;
 import Other.FrndCardFrame;
 import Other.OthrMouseAdapter;
@@ -66,6 +67,8 @@ public class KernelFrame extends JFrame implements Runnable {
 	public static SndErrFrame srf = null;
 	// 添加好友窗体,只能打开一张
 	public static AddFrndFrame aff = null;
+	// 批量删除窗体,只能打开一张
+	public static BatchDltFrame bdf = null;
 
 	// 其它
 	// 联系人树的渲染器
@@ -101,7 +104,7 @@ public class KernelFrame extends JFrame implements Runnable {
 		myInit();// 整体窗体初始化
 		pplDraw();// 联系人面板jp_ppl的绘制
 		// TODO 群聊面板绘制
-		othrDraw();
+		othrDraw();// [其它]面板绘制
 		this.setVisible(true);// 全部绘制好后再设置为可见
 
 		// 单开一个线程用来接收服务器发来的信息,因为接收可能阻塞
@@ -439,7 +442,7 @@ public class KernelFrame extends JFrame implements Runnable {
 				if (aff == null)
 					aff = new AddFrndFrame(dos);
 				else {
-					// aff窗口关闭时会析构自己,因此这里只是最小化
+					// aff窗口关闭时会析构自己,因此这里一定是被最小化了
 					aff.setExtendedState(JFrame.NORMAL);
 					aff.requestFocus();
 				}
@@ -463,6 +466,20 @@ public class KernelFrame extends JFrame implements Runnable {
 		jb_del.setIcon(new ImageIcon("./krnl_pic/del.png"));
 		jb_del.setFocusable(false);
 		jb_del.setBackground(clr_othr);
+		jb_del.addActionListener(new ActionListener() {
+			// FIXME
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (bdf == null)
+					bdf = new BatchDltFrame();
+				else {
+					// bdf窗口关闭时会析构自己,因此这里一定是被最小化了
+					bdf.setExtendedState(JFrame.NORMAL);
+					bdf.requestFocus();
+					bdf.setVisible(true);
+				}
+			}
+		});
 		jb_del.addMouseListener(oma);
 		jp_othr.add(jb_del);
 

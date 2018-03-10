@@ -17,6 +17,7 @@ public class Main {
 		// new FrndChatFrame(new FrndNode("10000", "flora", 3));
 		// new SignUpClient();
 		// new FrndCardFrame("TODO");
+		// new BatchDltFrame();
 
 	}
 
