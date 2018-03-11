@@ -14,6 +14,7 @@ import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -36,10 +37,13 @@ public class FrndChatFrame extends JFrame {
 	JButton jb_snd, jb_ext;// 发送按钮,关闭按钮
 	JTextField jtf_inpt;// 输入框
 	JTextArea jta_rcv;// 接收框,可以改成JPanel
+	// 发送图片,资料卡,清屏,保存聊天记录,修改背景颜色
+	JButton jb_pic, jb_card, jb_cln, jb_hstry, jb_clr;
 
 	// 其它
 	private Font ft_jt = new Font("黑体", 1, 20);// 发送/接收框字体
 	public FrndCardFrame fcrdf = null;// 该好友的资料卡,仅能通过单击头像打开
+	Color clr_jb = Color.WHITE;
 
 	// 构造器,传入双击的那个联系人结点
 	public FrndChatFrame(FrndNode fn) {
@@ -96,7 +100,7 @@ public class FrndChatFrame extends JFrame {
 		// 输入栏
 		jtf_inpt = new JTextField(20);
 		jtf_inpt.setFont(ft_jt);
-		jtf_inpt.setBounds(20, 320, 300, 40);
+		jtf_inpt.setBounds(20, 320, 370, 40);
 		jtf_inpt.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(KeyEvent e) {
@@ -113,9 +117,83 @@ public class FrndChatFrame extends JFrame {
 		});
 		this.add(jtf_inpt);
 
+		// 清屏按钮
+		jb_cln = new JButton();
+		jb_cln.setIcon(new ImageIcon("./krnl_pic/cln.png"));
+		jb_cln.setFocusable(false);
+		jb_cln.setBounds(20, 285, 30, 30);
+		jb_cln.setBackground(clr_jb);
+		jb_cln.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				jta_rcv.setText("");
+				jtf_inpt.grabFocus();
+			}
+		});
+		this.add(jb_cln);
+
+		// 发送图片按钮
+		jb_pic = new JButton();
+		jb_pic.setIcon(new ImageIcon("./krnl_pic/pic.png"));
+		jb_pic.setFocusable(false);
+		jb_pic.setBounds(60, 285, 30, 30);
+		jb_pic.setBackground(clr_jb);
+		this.add(jb_pic);
+
+		// 资料卡按钮
+		jb_card = new JButton();
+		jb_card.setIcon(new ImageIcon("./krnl_pic/card.png"));
+		jb_card.setFocusable(false);
+		jb_card.setBounds(100, 285, 30, 30);
+		jb_card.setBackground(clr_jb);
+		jb_card.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// 发送给服务器消息以获取好友资料
+				try {
+					KernelFrame.dos.writeUTF("[msg]" + ctptUsr);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		this.add(jb_card);
+
+		// 保存历史按钮
+		jb_hstry = new JButton();
+		jb_hstry.setIcon(new ImageIcon("./krnl_pic/hstry.png"));
+		jb_hstry.setFocusable(false);
+		jb_hstry.setBounds(140, 285, 30, 30);
+		jb_hstry.setBackground(clr_jb);
+		jb_hstry.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// FIXME
+			}
+		});
+		this.add(jb_hstry);
+
+		// 修改背景颜色按钮
+		jb_clr = new JButton();
+		jb_clr.setIcon(new ImageIcon("./krnl_pic/clr.png"));
+		jb_clr.setFocusable(false);
+		jb_clr.setBounds(180, 285, 30, 30);
+		jb_clr.setBackground(clr_jb);
+		jb_clr.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// 颜色对话框
+				Color newClr = JColorChooser.showDialog(null, "修改聊天窗体背景色", KernelFrame.clr_ppl);
+				if (newClr != null) {
+					getContentPane().setBackground(newClr);
+				}
+			}
+		});
+		this.add(jb_clr);
+
 		// 发送按钮
 		jb_snd = new JButton("发送");
-		jb_snd.setBounds(360, 320, 70, 40);
+		jb_snd.setBounds(405, 320, 70, 40);
 		jb_snd.addActionListener(new MyActionAdapter() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -130,6 +208,7 @@ public class FrndChatFrame extends JFrame {
 				jtf_inpt.grabFocus();// 取回焦点
 			}
 		});
+		jb_snd.setFocusable(false);
 		jb_snd.setBackground(new Color(210, 200, 250));
 		this.add(jb_snd);
 
