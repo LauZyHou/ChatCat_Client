@@ -1,6 +1,7 @@
 package Other;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,6 +35,7 @@ public class FrndCardFrame extends JFrame {
 	int Sex;// 0女1男
 	ImageIcon ii_hd;
 	String Name, Signature;// 昵称,签名档
+	Font myft = new Font("隶书", 1, 17);
 
 	// 颜色
 	// 背景颜色
@@ -83,26 +85,29 @@ public class FrndCardFrame extends JFrame {
 		// 头像的ImageIcon对象
 		ii_hd = new ImageIcon("./pic/cat" + HeadID + ".jpeg");
 		// 对头像两步缩放
-		ii_hd.setImage(ii_hd.getImage().getScaledInstance(80, 80, Image.SCALE_DEFAULT));
+		ii_hd.setImage(ii_hd.getImage().getScaledInstance(60, 60, Image.SCALE_DEFAULT));
 		// 用这个ImageIcon对象设置头像入JLabel
 		jl_hd = new JLabel(ii_hd);
 		jl_hd.setOpaque(true);// 设置JLabel为不透明才能看见底色(作边框)
 		jl_hd.setBackground(clr_hd[Sex]);// 底色白色作边框
-		jl_hd.setBounds(10, 10, 90, 90);// 大小稍多一截作边框
+		jl_hd.setBounds(10, 10, 70, 70);// 大小稍多一截作边框
 		this.add(jl_hd);
 
 		// 昵称
 		jtf_nm = new JTextField(this.Name);
 		jtf_nm.setEditable(false);
-		jtf_nm.setBounds(110, 10, 80, 40);
+		jtf_nm.setForeground(Color.BLACK);
+		jtf_nm.setFont(myft);
+		jtf_nm.setBounds(90, 10, 100, 40);
 		this.add(jtf_nm);
 
 		// 个性签名
 		jta_sgntr = new JTextArea(this.Signature);
 		jta_sgntr.setEditable(false);
 		// jta_sgntr.setEnabled(false);
-		jta_sgntr.setBounds(8, 110, 180, 110);
+		jta_sgntr.setBounds(8, 100, 180, 110);
 		jta_sgntr.setLineWrap(true);
+		jta_sgntr.setFont(myft);
 		this.add(jta_sgntr);
 
 		// 确认

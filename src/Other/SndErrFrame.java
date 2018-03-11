@@ -32,7 +32,7 @@ public class SndErrFrame extends JFrame {
 		// 文本提示
 		jl = new JLabel("描述发生的BUG并提交:");
 		jl.setFont(new Font("黑体", 1, 22));
-		jl.setBounds(90, 10, 250, 30);
+		jl.setBounds(85, 10, 250, 30);
 		this.add(jl);
 
 		// 文本区域

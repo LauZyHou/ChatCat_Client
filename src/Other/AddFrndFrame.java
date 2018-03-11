@@ -177,6 +177,7 @@ public class AddFrndFrame extends JFrame {
 
 		// JList
 		jl = new JList<String>();
+		jl.setFont(new Font("黑体", 1, 20));
 		jl.setModel(dlm);// 设置渲染器
 		jl.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		jl.setBounds(0, 0, 340, 160);

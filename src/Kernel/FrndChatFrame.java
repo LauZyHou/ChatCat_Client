@@ -63,7 +63,7 @@ public class FrndChatFrame extends JFrame {
 		// 两步缩放对方的头像
 		Image img = ii_ctptHd.getImage().getScaledInstance(50, 50, Image.SCALE_DEFAULT);
 		jl_hd.setIcon(new ImageIcon(img));// 头像放入
-		jl_hd.setText("<HTML>" + ctptNm + "<br>" + ctptSig + "</HTML>");// 名字和个性签名放入
+		jl_hd.setText("<HTML><font size=\"6\" color=\"#330066\">" + ctptNm + "</font><br>" + ctptSig + "</HTML>");// 名字和个性签名放入
 		jl_hd.setIconTextGap(15);// 设置JLabel文字图片间距
 		jl_hd.addMouseListener(new MouseAdapter() {
 			// 单击头像
@@ -77,7 +77,11 @@ public class FrndChatFrame extends JFrame {
 				}
 			}
 		});
-		jl_hd.setBounds(20, 0, 500, 80);
+		jl_hd.setBounds(20, 10, 500, 60);
+		jl_hd.setLayout(null);
+		jl_hd.setBackground(new Color(200, 200, 240));
+		jl_hd.setForeground(Color.BLACK);
+		jl_hd.setOpaque(true);
 		this.add(jl_hd);
 
 		// 接收框
@@ -86,13 +90,13 @@ public class FrndChatFrame extends JFrame {
 		jta_rcv.setEditable(false);
 		jta_rcv.setLineWrap(true);// 自动换行
 		JScrollPane jsp = new JScrollPane(jta_rcv);// 放入滚动条
-		jsp.setBounds(20, 80, 300, 200);
+		jsp.setBounds(20, 80, 455, 200);
 		this.add(jsp);
 
 		// 输入栏
 		jtf_inpt = new JTextField(20);
 		jtf_inpt.setFont(ft_jt);
-		jtf_inpt.setBounds(20, 300, 300, 40);
+		jtf_inpt.setBounds(20, 320, 300, 40);
 		jtf_inpt.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(KeyEvent e) {
@@ -111,7 +115,7 @@ public class FrndChatFrame extends JFrame {
 
 		// 发送按钮
 		jb_snd = new JButton("发送");
-		jb_snd.setBounds(360, 300, 70, 40);
+		jb_snd.setBounds(360, 320, 70, 40);
 		jb_snd.addActionListener(new MyActionAdapter() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

@@ -30,7 +30,8 @@ public class FrndTrCllRndrr extends JLabel implements TreeCellRenderer {
 		// 这样的结点才是真正的ChatCat用户所在的结点
 		if (leaf == true && fn.getParent() != tree.getModel().getRoot()) {
 			// 继承自JLabel的文字属性的set方法,JLabel的文字不能换行,使用HTML标签换行
-			this.setText("<HTML>" + fn.Name + "<br>" + fn.Signature + "</HTML>");
+			this.setText(
+					"<HTML><font size=\"4\" color=\"#330099\">" + fn.Name + "</font><br>" + fn.Signature + "</HTML>");
 			// 两步缩放这个好友结点的头像
 			Image img = fn.ii_head.getImage().getScaledInstance(50, 50, Image.SCALE_DEFAULT);
 			// 继承自JLabel的图片属性的set方法,转回ImageIcon对象传入
@@ -50,7 +51,7 @@ public class FrndTrCllRndrr extends JLabel implements TreeCellRenderer {
 		else {
 			// 将结点名字拿出来放到JLabel
 			this.setOpaque(false);
-			this.setText(fn.Name);
+			this.setText("<HTML><font size=\"5\" color=\"#000000\">" + fn.Name + "</font>");
 			// 当这个结点展开时
 			if (expanded == true) {
 				// 设置箭头向下的图标
