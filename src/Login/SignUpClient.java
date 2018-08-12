@@ -243,7 +243,7 @@ public class SignUpClient extends JFrame implements Runnable {
 			jrb_hd[i] = new JRadioButton(ii_myhd, false);
 			jrb_hd[i].setBounds(60 + (i % 3) * 100, 300 + (i / 3) * 100, 50, 50);
 			// jrb_hd[i]对内部类(接口)不可见,取其引用
-			JRadioButton jrb = jrb_hd[i];
+			final JRadioButton jrb = jrb_hd[i];
 			jrb.addItemListener(new ItemListener() {
 				// 先发生的是"失去选中",再发生"获得选中",都引起这个方法调用
 				@Override
