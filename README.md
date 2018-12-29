@@ -1,5 +1,5 @@
 # CatCat聊天客户端
-ChatCat聊天(客户端)，Swing+Socket(TCP)，JavaSE课程项目。 
+ChatCat聊天(客户端)，Swing+Socket(TCP)+MySQL，JavaSE课程项目。 
 ## 主要界面展示
 ### 登录界面
 ![](https://i.imgur.com/lwZRWZM.jpg)
